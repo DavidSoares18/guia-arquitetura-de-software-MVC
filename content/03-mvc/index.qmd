@@ -1,23 +1,27 @@
 ---
-title: "Tópico modelo"
-subtitle: "Estrutura e profundidade esperadas de uma contribuição"
+title: "MVC (Model-View-Controller)"
+subtitle: "Separando estado, apresentação e interação em sistemas interativos"
 author:
-  - name: "Nome Completo do Autor"
-  - name: "Nome Completo da Segunda Autora"
-date: 2026-08-30
+  - name: "Ian Képler dos Santos Araújo"
+  - name: "João Gabriel"
+  - name: "João Lucas"
+  - name: "David Soares"
+  - name: "Lucas Matheus"
+  - name: "Antonio Mario"
+date: 2026-09-22
 date-modified: last-modified
 bibliography: referencias.bib
 citation:
   type: webpage
   container-title: "Guia Aberto de Arquitetura de Software"
 license: "CC BY-NC 4.0"
-keywords: ["palavra-chave", "keyword"]
+keywords: ["MVC", "Model-View-Controller", "padrão arquitetural", "separação de responsabilidades", "Observer"]
 ---
 
 ::: {.meta-topico}
 <dl>
 <dt>Competências</dt>
-<dd>Avaliar quando um estilo arquitetural é adequado ao problema</dd>
+<dd>Distinguir as responsabilidades de Model, View e Controller e avaliar quando o MVC é adequado ao problema</dd>
 <dt>Pré-requisitos</dt>
 <dd>Nenhum</dd>
 <dt>Formatos</dt>
@@ -27,41 +31,56 @@ keywords: ["palavra-chave", "keyword"]
 </dl>
 :::
 
-::: {.callout-note}
-## Como usar esta página
-Esta é a página modelo do projeto. A estrutura abaixo é obrigatória; o conteúdo é
-ilustrativo e deve ser substituído. Copie a pasta `content/00-modelo/` inteira,
-renomeie para `content/NN-seu-topico/` e substitua tudo — inclusive
-`metadata.yaml`, `referencias.bib`, etc.
-:::
-
 ## Definição e contexto
 
-Abra definindo o conceito com precisão, em uma ou duas frases, antes de qualquer
-digressão histórica. O leitor que chegou aqui de uma busca precisa saber em dez
-segundos se está na página certa.
+**Model-View-Controller (MVC)** é um padrão arquitetural para sistemas interativos
+que divide a aplicação em três papéis: o **Model**, que guarda o estado e as regras
+de negócio; a **View**, que apresenta esse estado ao usuário; e o **Controller**, que
+recebe as ações do usuário e as traduz em operações sobre o Model. A ideia central
+é separar *o que o sistema sabe* de *como isso é mostrado* e de *como o usuário
+interage com isso*, para que cada parte possa mudar sem arrastar as outras junto.
 
-Depois, situe o problema. Todo estilo arquitetural existe porque alguma
-dificuldade concreta apareceu antes dele: acoplamento excessivo, impossibilidade
-de evoluir partes independentes, custo de coordenação entre equipes. Nomeie essa
-dificuldade. Um texto que apresenta a solução sem apresentar o problema ensina a
-decorar, não a decidir.
+O padrão nasceu de um problema bem concreto. No fim da década de 1970, as primeiras
+interfaces gráficas começavam a surgir, e o código que desenhava a tela, o código
+que tratava os cliques e teclas e o código que manipulava os dados costumavam ficar
+misturados no mesmo lugar. Isso gerava dois sintomas. Primeiro, uma mesma
+informação exibida de várias formas — uma lista e um gráfico, por exemplo — podia
+ficar inconsistente, porque cada tela mantinha sua própria cópia e fazia suas
+próprias contas. Segundo, qualquer mudança visual obrigava a mexer em regras de
+negócio que nada tinham a ver com a aparência, e vice-versa.
 
-O critério de decomposição modular proposto por Parnas [@parnas1972modularization]
-é um bom exemplo de como uma decisão arquitetural nasce de um problema observado:
-a dificuldade de modificar sistemas cujos módulos foram divididos por etapas de
-processamento em vez de por informação escondida.
+Foi nesse contexto que Trygve Reenskaug, trabalhando no Xerox PARC com a linguagem
+Smalltalk, descreveu em 1979 a separação entre modelos, visões e controladores
+[@reenskaug1979mvc]. O objetivo declarado era aproximar o modelo mental do usuário
+da representação do sistema no computador: o Model representa o conhecimento do
+domínio, e as Views e Controllers são apenas formas de enxergar e de manipular esse
+conhecimento. Quase uma década depois, Krasner e Pope documentaram como o padrão
+havia sido implementado no Smalltalk-80, incluindo o mecanismo de dependência pelo
+qual o Model avisa suas Views de que mudou sem conhecê-las diretamente
+[@krasner1988cookbook]. Esse mecanismo foi mais tarde catalogado como o padrão de
+projeto *Observer* [@gamma1994design].
 
-::: {.callout-tip}
-## Sobre as citações
-Cite com `[@chave2023]`, que o Quarto converte em `[1]`, `[2]` automaticamente e
-usa para montar a lista de referências no fim da página. Nunca escreva `[1]` na
-mão: a numeração muda quando você insere uma citação nova, e o vínculo com a
-bibliografia se perde.
+Por trás do MVC está o mesmo raciocínio que Parnas havia proposto para a
+decomposição de sistemas: separar módulos pelas decisões que tendem a mudar, e
+não pelas etapas de processamento [@parnas1972modularization]. Em sistemas
+interativos, a interface é justamente a parte que muda com mais frequência — novas
+telas, novos dispositivos, novos formatos de saída —, enquanto as regras de negócio
+mudam bem menos. Mantê-las no mesmo módulo faz com que cada ajuste visual coloque
+em risco a lógica do domínio.
 
-Para citar uma seção específica de um livro longo, use
-`[@bass2021software, cap. 13]` — isso é obrigatório em livros de referência.
-:::
+Com a popularização da web, o padrão foi adaptado ao ciclo de requisição e resposta
+HTTP por frameworks como Ruby on Rails, Django, Spring MVC e ASP.NET MVC, e passou a
+ser descrito como um padrão de apresentação para aplicações corporativas
+[@fowler2002patterns, cap. 14]. Essa difusão teve um custo: o nome "MVC" passou a
+designar arquiteturas bem diferentes entre si, e Fowler observa que pessoas
+diferentes leem sobre o padrão em lugares diferentes e saem com ideias diferentes
+sobre o que ele é [@fowler2006guiarchitectures]. Por isso, este texto parte da
+formulação clássica e indica, quando necessário, onde as variantes se afastam dela.
+
+Ao longo da página usamos um único exemplo: um sistema de boletim escolar, em que
+uma turma registra as notas dos alunos, calcula médias e informa quem está
+aprovado. As próximas seções mostram o papel de cada componente nesse exemplo, e o
+notebook implementa o mesmo caso em Python.
 
 ## Estrutura e componentes
 

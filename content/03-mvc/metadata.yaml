@@ -1,42 +1,59 @@
 # Metadados do tópico — preencha tudo. O CI valida os campos obrigatórios.
 # Este arquivo também alimenta a indexação por ferramentas de IA.
 
-numero: "00"
-slug: "modelo"
-titulo: "Tópico modelo"
-subtitulo: "Estrutura e profundidade esperadas de uma contribuição"
+numero: "03"
+slug: "mvc"
+titulo: "MVC (Model-View-Controller)"
+subtitulo: "Separando estado, apresentação e interação em sistemas interativos"
 resumo: >-
-  Descreva o tópico em 2 ou 3 frases, como um abstract. Este texto aparece no
-  cartão da home e nos metadados Open Graph.
+  O MVC divide uma aplicação interativa em Model (estado e regras de negócio),
+  View (apresentação) e Controller (entrada do usuário). Criado por Trygve
+  Reenskaug no Xerox PARC em 1979 para resolver o acoplamento entre interface e
+  lógica, o padrão continua sendo a base de muitos frameworks web e de interface.
 
 # Um tópico pode ter vários autores — liste um item por pessoa, na ordem em que
 # devem ser creditados. Todos entram no crédito, na citação e na lista de
 # contribuidores do site.
 autores:
-  - nome: "Nome Completo do Autor"
-    grupo: "Grupo 0" # opcional
-    github: "usuario-github" # opcional
-    orcid: ""          # opcional
-  - nome: "Nome Completo da Segunda Autora"
-    grupo: "Grupo 0"
-    github: "outro-usuario-github"
+  - nome: "Ian Képler dos Santos Araújo"
+    grupo: "Grupo 2"
+    github: ""   # TODO: seu usuário do GitHub
+    orcid: ""
+  - nome: "João Gabriel"          # TODO: nome completo
+    grupo: "Grupo 2"
+    github: ""   # TODO
+    orcid: ""
+  - nome: "João Lucas"            # TODO: nome completo
+    grupo: "Grupo 2"
+    github: ""   # TODO
+    orcid: ""
+  - nome: "David Soares"          # TODO: nome completo
+    grupo: "Grupo 2"
+    github: "DavidSoares18"
+    orcid: ""
+  - nome: "Lucas Matheus"         # TODO: nome completo
+    grupo: "Grupo 2"
+    github: ""   # TODO
+    orcid: ""
+  - nome: "Antonio Mario"         # TODO: nome completo
+    grupo: "Grupo 2"
+    github: ""   # TODO
     orcid: ""
 
-status: "modelo"        # rascunho | em-revisao | publicado | modelo
-data_criacao: "2026-08-30"
-ultima_revisao: "2026-08-30"
-revisado_por:
-  - "Nome do revisor par"
-  - "Nome do revisor de manutenção"
+status: "rascunho"        # rascunho | em-revisao | publicado | modelo
+data_criacao: "2026-09-22"
+ultima_revisao: "2026-09-22"
+revisado_por: []
 
 # Estrutura pedagógica
 competencias:
-  - "Descreva em forma de verbo + objeto o que o leitor consegue fazer depois"
-  - "Ex: avaliar quando a decomposição em camadas prejudica desempenho"
-nivel_bloom: ["compreender", "analisar"]   # lembrar|compreender|aplicar|analisar|avaliar|criar
+  - "Distinguir as responsabilidades de Model, View e Controller em um sistema interativo"
+  - "Identificar violações do padrão, como o fat controller e a View que acessa o Model diretamente"
+  - "Avaliar quando a separação do MVC compensa o custo extra de estrutura"
+nivel_bloom: ["compreender", "analisar", "avaliar"]   # lembrar|compreender|aplicar|analisar|avaliar|criar
 pre_requisitos: []                          # slugs de outros tópicos
 topicos_relacionados: []
-palavras_chave: ["palavra-chave", "keyword em inglês"]
+palavras_chave: ["MVC", "Model-View-Controller", "padrão arquitetural", "separação de responsabilidades", "Observer", "fat controller"]
 
 # Formatos entregues — o CI verifica a existência do que está marcado como true
 formatos:
