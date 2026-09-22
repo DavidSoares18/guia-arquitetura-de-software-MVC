@@ -1,6 +1,6 @@
 | Atributo | Efeito | Por quê |
 |---|---|---|
-| Modificabilidade | Favorecida | Mudança em uma camada não propaga, desde que a interface se mantenha |
-| Desempenho | Comprometido | Cada requisição atravessa todas as camadas, somando latência |
-| Testabilidade | Favorecida | Camadas podem ser substituídas por dublês em teste |
-| Simplicidade operacional | Comprometida | Mais partes para implantar e monitorar |
+| Modificabilidade | Favorecida | Alterações na interface visual (View) não afetam a lógica de negócio (Model) e vice-versa |
+| Testabilidade | Favorecida | O Model e o Controller podem ser testados de forma isolada, sem depender da interface do usuário |
+| Reusabilidade | Favorecida | Múltiplas Views (ex: web, mobile) podem reaproveitar o mesmo Model de dados e regras |
+| Simplicidade inicial | Comprometida | Aumenta a complexidade e a quantidade de arquivos para implementações pequenas ou simples |

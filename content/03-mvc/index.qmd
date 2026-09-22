@@ -133,17 +133,19 @@ de recomendações vagas.
 
 **Considere usar quando:**
 
-- A condição concreta que torna esse estilo adequado
-- Outra condição
+- A aplicação possui regras de negócio que precisam ser rigorosamente separadas da apresentação (interface)
+- Múltiplas interfaces de usuário (Views) precisam interagir com e exibir os mesmos dados do domínio (Model)
+- Há necessidade de desenvolvimento paralelo, onde desenvolvedores focados em UI (View) e lógica (Model) podem trabalhar independentemente
 
 **Evite quando:**
 
-- A condição em que o custo supera o benefício
-- Outra condição
+- A aplicação é pequena, simples e sem muita lógica de negócio, onde a complexidade do MVC resulta em *overengineering*
+- O projeto é focado majoritariamente em visualização de dados estáticos ou prototipagem rápida, sem manipulação de estado complexo
 
 **Sinais de que a escolha foi errada:**
 
-- Sintoma observável que indica desalinhamento entre estilo e problema
+- O Controller está acumulando lógica de negócio e regras que deveriam pertencer ao Model (*Fat Controller* ou Controlador Obeso)
+- Modificações simples na aplicação exigem alterações em várias classes ou arquivos (Model, View e Controller) sem trazer benefícios claros de organização
 
 ::: {.callout-note}
 ## Slides deste tópico
