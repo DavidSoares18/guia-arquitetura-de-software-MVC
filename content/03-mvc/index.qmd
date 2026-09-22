@@ -64,7 +64,33 @@ Para citar uma seção específica de um livro longo, use
 :::
 
 ## Estrutura e componentes
+
 ###Model
+O Model é o centro do sistema, e é a única parte que continuaria fazendo sentido se a interface fosse jogada fora. 
+Ele guarda duas coisas: o estado, que são os dados em si, e as regras de negócio, que dizem o que pode ser feito com esses dados
+ e o que cada um deles significa. No nosso exemplo do boletim, a classe `Turma` guarda as notas de cada aluno e é ela quem sabe calcular a 
+ média e responder se o aluno está aprovado. Nenhuma outra parte do sistema tem permissão para fazer essa conta.
+ 
+Vale insistir nesse ponto, porque é onde a maioria dos projetos escorrega: colocar a regra no Model não é só uma questão de organização, 
+é o que garante que a resposta seja a mesma para todo mundo que perguntar. Se a tabela, o resumo e um relatório futuro perguntam 
+`turma.aprovado("Carla")`, os três recebem a mesma resposta por construção. Quando cada tela faz sua própria conta, a igualdade das respostas 
+passa a depender de alguém lembrar de atualizar todas, e é exatamente isso que falha.
+O Model também é responsável por **avisar que mudou**, mas sem saber para quem está avisando. Ele mantém uma lista de interessados e, 
+sempre que uma operação altera o estado, percorre essa lista chamando cada um. Krasner e Pope descrevem esse mecanismo como a base do MVC no 
+Smalltalk-80: o Model trata suas Views como "dependentes" anônimos [@krasner1988cookbook]. Na prática, isso significa que o Model conhece apenas 
+um contrato ("alguém que quer ser avisado"), e não classes de tela.
+ 
+Daí vem a independência da interface visual. Um Model bem feito não importa biblioteca gráfica, não chama `print`, não monta HTML e não 
+conhece requisição HTTP. Existe um teste simples para conferir isso: se der para apagar todas as Views e Controllers do projeto e o Model 
+continuar compilando e sendo testável, ele está independente. É o que fazemos no notebook, criando uma turma, lançando notas e verificando a 
+aprovação sem instanciar nenhuma tela. Esse é o mesmo raciocínio de Parnas sobre esconder atrás de um módulo a decisão que mais tende a mudar 
+[@parnas1972modularization]: a interface muda toda hora, as regras mudam bem menos, então elas não podem ficar juntas.
+ 
+Duas dúvidas comuns sobre o Model. A primeira é se ele inclui o banco de dados. O MVC não define isso, 
+e em sistemas maiores é comum separar a lógica de negócio do acesso aos dados, deixando o Model como camada de domínio e colocando a 
+persistência atrás de uma interface própria [@fowler2002patterns, cap. 9]. A segunda é o Model que vira só um conjunto de atributos com 
+`get` e `set`, enquanto as contas ficam espalhadas em outro lugar. Quando isso acontece, o nome continua sendo Model, mas o benefício da 
+separação já foi perdido.
 
 ###View
 
