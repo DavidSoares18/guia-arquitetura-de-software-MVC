@@ -64,26 +64,53 @@ Para citar uma seção específica de um livro longo, use
 :::
 
 ## Estrutura e componentes
+###Model
 
-Descreva as partes que compõem o estilo e como se relacionam. Esta seção precisa
-de **pelo menos um diagrama seu** — não uma imagem copiada de um livro.
+###View
 
-Diagramas podem ser feitos em Mermaid direto no texto, o que tem a vantagem de
-ficarem versionados como código:
+###Controller
+O **Controller** foi definido originalmente como o componente que interpreta
+eventos de entrada do usuário e os traduz em comandos para o Model e a View
+[@krasner1988cookbook]. Ele recebe o evento — uma submissão de formulário,
+um clique, uma requisição HTTP —, aciona o Model para executar a lógica de
+negócio e seleciona qual View deve responder (@fig-estrutura). Apesar do nome
+"MVC" ser usado de forma inconsistente entre frameworks, o princípio central
+se mantém: separar a lógica de apresentação da lógica de domínio, sincronizando
+o estado por meio de eventos [@fowler2006guiarchitectures].
+
+É proibido ao Controller conter lógica de negócio — validação de regra de
+domínio pertence ao Model — assim como é proibido formatar ou renderizar
+a saída diretamente, responsabilidade exclusiva da View. Também não deve
+acessar armazenamento ou persistência diretamente, contornando o Model.
+
+Quando essas restrições são violadas, o sintoma mais documentado é o *fat
+controller*: o controller acumula lógica de negócio, transformação de dados e
+acesso à persistência, tornando-se difícil de testar isoladamente do ciclo de
+requisição e impossível de reaproveitar entre, por exemplo, uma API REST e uma
+interface web que usem a mesma regra [@pytel2010railsantipatterns, cap. 4].
 
 ```{mermaid}
 %%| label: fig-estrutura
-%%| fig-cap: "Componentes do estilo e a direção das dependências permitidas."
+%%| fig-cap: "Componentes do MVC e a direção das dependências permitidas."
 flowchart TD
-    A[Componente de interface] --> B[Componente de aplicação]
-    B --> C[Componente de domínio]
-    C --> D[(Armazenamento)]
+    U[Usuário] --> V[View]
+    V -->|evento de entrada| C[Controller]
+    C -->|consulta / comanda| M[Model]
+    M -.->|notifica mudança| V
+    C -->|seleciona| V
+    M --> D[(Armazenamento)]
 ```
 
-Ao descrever a estrutura, seja explícito sobre **o que é proibido**, não apenas
-sobre o que é permitido. Um estilo arquitetural se define tanto pelas conexões que
-autoriza quanto pelas que veda — e é a violação dessas restrições que degrada a
-arquitetura ao longo do tempo [@bass2021software, cap. 1].
+Um estilo arquitetural se define tanto pelas conexões que autoriza quanto pelas
+que veda [@bass2021software, cap. 1]. Na @fig-estrutura, a conexão proibida mais
+importante é **View → Model direto**: a View não deve consultar nem modificar o
+Model diretamente, apenas reagir às notificações de mudança de estado que ele
+emite através do Controller. Essa restrição não é universal — variantes mais
+permissivas do padrão, como algumas implementações de MVVM, autorizam a View a
+ler o Model diretamente —, mas no MVC clássico é justamente essa fronteira que,
+quando violada, produz uma View acoplada a detalhes internos do domínio,
+inviabilizando a substituição de uma camada de apresentação por outra sem tocar
+no Model.
 
 ## Exemplo aplicado
 
