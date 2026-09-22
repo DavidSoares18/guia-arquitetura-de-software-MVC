@@ -17,27 +17,27 @@ resumo: >-
 autores:
   - nome: "Ian Képler dos Santos Araújo"
     grupo: "Grupo 2"
-    github: ""   # TODO: seu usuário do GitHub
+    github: "iankepler5"
     orcid: ""
-  - nome: "João Gabriel"          # TODO: nome completo
+  - nome: "João Gabriel"
     grupo: "Grupo 2"
-    github: ""   # TODO
+    github: ""
     orcid: ""
-  - nome: "João Lucas"            # TODO: nome completo
+  - nome: "João Lucas"
     grupo: "Grupo 2"
-    github: ""   # TODO
+    github: ""
     orcid: ""
-  - nome: "David Soares"          # TODO: nome completo
+  - nome: "David Soares"
     grupo: "Grupo 2"
     github: "DavidSoares18"
     orcid: ""
-  - nome: "Lucas Matheus"         # TODO: nome completo
+  - nome: "Lucas Matheus"
     grupo: "Grupo 2"
-    github: ""   # TODO
+    github: ""
     orcid: ""
-  - nome: "Antonio Mario"         # TODO: nome completo
+  - nome: "Antonio Mario"
     grupo: "Grupo 2"
-    github: ""   # TODO
+    github: ""
     orcid: ""
 
 status: "rascunho"        # rascunho | em-revisao | publicado | modelo
