@@ -113,6 +113,43 @@ separação já foi perdido.
 
 ###View
 
+A View é a parte do sistema responsável por apresentar o estado do Model ao
+usuário. Ela não decide o que os dados significam nem os altera — apenas lê o
+que o Model expõe e escolhe uma forma de exibir. No exemplo do boletim, é a
+View que pega a média já calculada pela `Turma` e decide se mostra uma tabela
+com os nomes e notas, um resumo em texto ou um gráfico de aprovados e
+reprovados. A conta em si não é feita ali: se a View recalculasse a média por
+conta própria, o mesmo problema de inconsistência que o Model resolve
+reapareceria, só que de outro lado.
+
+Essa passividade é o que permite que **várias Views coexistam sobre o mesmo
+Model** sem duplicar lógica nem correr risco de divergir. Como visto na seção
+anterior, o Model mantém uma lista de dependentes e avisa a todos quando algo
+muda, sem saber que tipo de tela cada um é [@krasner1988cookbook]. A View entra
+nesse esquema como um observador concreto: ao ser criada, registra-se junto ao
+Model; ao receber o aviso de mudança, relê o estado atual e se redesenha. Esse
+mecanismo de notificação é exatamente o padrão de projeto *Observer*
+[@gamma1994design], e é o que possibilita, por exemplo, que a tabela e o
+gráfico de aprovação do boletim se atualizem juntos assim que uma nota nova é
+lançada, sem que um dependa do outro nem que o Model precise conhecer nenhum
+dos dois por nome.
+
+A fronteira que a View não deve cruzar é a leitura passiva do Model. Ela pode
+consultar o estado para se desenhar, mas não pode alterá-lo diretamente nem
+decidir, sozinha, o que fazer com uma ação do usuário — isso é papel do
+Controller, como mostra a @fig-estrutura. Quando esse limite é ignorado e a
+View passa a escrever no Model ou a embutir regra de negócio na formatação
+("se a média for maior que 6, pinte de verde, senão registre reprovação"), a
+lógica de domínio se espalha pela camada de apresentação e deixa de ter uma
+única fonte de verdade — o mesmo risco que motivou, em primeiro lugar, tirar a
+conta da tela e colocá-la no Model.
+
+Vale notar que "View" não significa necessariamente uma interface gráfica.
+Uma rota de API que serializa o boletim em JSON, um relatório em texto puro
+gerado por linha de comando e uma página HTML renderizada no servidor são
+todas Views legítimas do mesmo Model, cada uma com seu próprio formato de
+saída, mas nenhuma com permissão para calcular a média por conta própria.
+
 ###Controller
 O **Controller** foi definido originalmente como o componente que interpreta
 eventos de entrada do usuário e os traduz em comandos para o Model e a View
