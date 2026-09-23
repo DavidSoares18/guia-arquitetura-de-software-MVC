@@ -6,8 +6,10 @@ slug: "modelo"
 titulo: "Tópico modelo"
 subtitulo: "Estrutura e profundidade esperadas de uma contribuição"
 resumo: >-
-  Descreva o tópico em 2 ou 3 frases, como um abstract. Este texto aparece no
-  cartão da home e nos metadados Open Graph.
+  O MVC divide uma aplicação interativa em Model (estado e regras de negócio),
+  View (apresentação) e Controller (entrada do usuário). Criado por Trygve
+  Reenskaug no Xerox PARC em 1979 para resolver o acoplamento entre interface e
+  lógica, o padrão continua sendo a base de muitos frameworks web e de interface.
 
 # Um tópico pode ter vários autores — liste um item por pessoa, na ordem em que
 # devem ser creditados. Todos entram no crédito, na citação e na lista de
@@ -43,31 +45,31 @@ formatos:
   texto: true
   notebook:
     entregue: true
-    colab_url: "https://colab.research.google.com/..."
+    colab_url: "https://colab.research.google.com/drive/1YU8xSnv_4mdtfyn6IkyZ379yIs-aP2GT?usp=sharing"
   audio_notebooklm:
     entregue: true
-    arquivo: "assets/audio-notebooklm.m4a"   # ou deixe vazio e use url
+    arquivo: "assets/audio-notebooklm.m4a"
     url: ""
     duracao_min: 12
     transcricao: "assets/audio-transcricao.md"
   gem_gemini:
     entregue: true
-    url: "https://gemini.google.com/gem/..."
+    url: "https://gemini.google.com/gem-labs/1NPyLSiayocYBjSqoxQ-kLajmonoaU4mc"
     instrucoes: |
-      Cole aqui as instruções exatas usadas para configurar a Gem, para que
-      qualquer pessoa possa recriá-la ou melhorá-la.
-
-      Ex: "Você é um tutor de Arquitetura de Software especializado em <tópico>.
-      Baseie todas as respostas exclusivamente no texto e nas referências
-      fornecidas. Cite sempre a referência no formato [n]. Se a pergunta não for
-      coberta pelo material, diga isso em vez de improvisar."
+      Você é um tutor especialista em Arquitetura de Software com foco profundo no padrão Model-View-Controller (MVC) e na evolução dos padrões de interface de usuário (como MVP, MVVM, SPAs e a arquitetura unidirecional do React).
+      Seu objetivo é ajudar os alunos a compreender a separação de responsabilidades, o fluxo de dados e os papéis de cada componente na arquitetura.
+      Baseie todas as suas respostas exclusivamente no material do guia fornecido (textos, transcrições de áudio e referências bibliográficas).
+      Sempre cite a fonte ou a referência ao explicar um conceito (ex: "Segundo o comparativo da Baidu..." ou "[1]").
+      Seja didático, utilize analogias do mundo real (como a analogia do restaurante ou do diplomata da ONU) e encoraje o pensamento crítico do aluno.
+      Se a pergunta do aluno não for coberta pelo material fornecido, informe educadamente que o material atual não aborda esse ponto específico e não invente ou improvise informações de fontes externas.
   slides:
     entregue: true
-    num_slides: 16
+    num_slides: 15
+    arquivo: "slides.qmd"
   # opcionais
   video:
-    entregue: false
-    url: ""
+    entregue: true
+    arquivo: "assets/video-mvc.mp4"
   podcast:
     entregue: false
     url: ""
