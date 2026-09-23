@@ -1,10 +1,10 @@
 # Metadados do tópico — preencha tudo. O CI valida os campos obrigatórios.
 # Este arquivo também alimenta a indexação por ferramentas de IA.
 
-numero: "03"
+numero: "00"
 slug: "modelo"
-titulo: "Decodificando Padrões de Arquitetura"
-subtitulo: "Desvendando o MVC"
+titulo: "Tópico modelo"
+subtitulo: "Estrutura e profundidade esperadas de uma contribuição"
 resumo: >-
   O MVC divide uma aplicação interativa em Model (estado e regras de negócio),
   View (apresentação) e Controller (entrada do usuário). Criado por Trygve
@@ -15,54 +15,30 @@ resumo: >-
 # devem ser creditados. Todos entram no crédito, na citação e na lista de
 # contribuidores do site.
 autores:
-  - nome: "Antonio Mário Jesus Vidal Leite"
-    grupo: "Grupo 2"
-    github: "https://github.com/amjvidal"
-    orcid: ""
-  - nome: "David Soares da Silva"
-    grupo: "Grupo 2"
-    github: "https://github.com/DavidSoares18"
-    orcid: ""
-  - nome: "Ian Kepler dos Santos Araujo"
-    grupo: "Grupo 3"
-    github: "https://github.com/iankepler5"
-    orcid: ""
-  - nome: "João Gabriel Marcos da Silva"
-    grupo: "Grupo 2"
-    github: "https://github.com/Jgabriel1800"
-    orcid: ""
-  - nome: "João Lucas da Silva Soares Oliveira"
-    grupo: "Grupo 2"
-    github: "https://github.com/jwaoluckas"
-    orcid: ""
-  - nome: "Lucas Matheus Elias Silva Teixeira dos Santos"
-    grupo: "Grupo 2"
-    github: "https://github.com/DavidSoares18/guia-arquitetura-de-software-MVC/commits?author=teixeiralucs"
+  - nome: "Nome Completo do Autor"
+    grupo: "Grupo 0" # opcional
+    github: "usuario-github" # opcional
+    orcid: ""          # opcional
+  - nome: "Nome Completo da Segunda Autora"
+    grupo: "Grupo 0"
+    github: "outro-usuario-github"
     orcid: ""
 
-status: "em-revisao" # rascunho | em-revisao | publicado | modelo
+status: "modelo"        # rascunho | em-revisao | publicado | modelo
 data_criacao: "2026-08-30"
-ultima_revisao: "" #Grupo 3: Adicionar revisão
+ultima_revisao: "2026-08-30"
 revisado_por:
-  -  #Nome do revisor par
-  -  #Nome do revisor de manutenção
+  - "Nome do revisor par"
+  - "Nome do revisor de manutenção"
 
 # Estrutura pedagógica
 competencias:
-  - "explicar os papéis do Model, View e Controller em uma aplicação"
-  - "identificar cenários onde o padrão arquitetural MVC é adequado"
-  - "aplicar os conceitos do MVC para estruturar o código de um projeto"
-nivel_bloom: ["compreender", "aplicar", "analisar"]
-pre_requisitos: []
+  - "Descreva em forma de verbo + objeto o que o leitor consegue fazer depois"
+  - "Ex: avaliar quando a decomposição em camadas prejudica desempenho"
+nivel_bloom: ["compreender", "analisar"]   # lembrar|compreender|aplicar|analisar|avaliar|criar
+pre_requisitos: []                          # slugs de outros tópicos
 topicos_relacionados: []
-palavras_chave:
-  [
-    "mvc",
-    "arquitetura de software",
-    "model-view-controller",
-    "padrões arquiteturais",
-    "design patterns",
-  ]
+palavras_chave: ["palavra-chave", "keyword em inglês"]
 
 # Formatos entregues — o CI verifica a existência do que está marcado como true
 formatos:
