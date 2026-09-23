@@ -1,73 +1,99 @@
 # Metadados do tópico — preencha tudo. O CI valida os campos obrigatórios.
 # Este arquivo também alimenta a indexação por ferramentas de IA.
 
-numero: "00"
+numero: "03"
 slug: "modelo"
-titulo: "Tópico modelo"
-subtitulo: "Estrutura e profundidade esperadas de uma contribuição"
+titulo: "Decodificando Padrões de Arquitetura"
+subtitulo: "Desvendando o MVC"
 resumo: >-
-  Descreva o tópico em 2 ou 3 frases, como um abstract. Este texto aparece no
-  cartão da home e nos metadados Open Graph.
+  O MVC divide uma aplicação interativa em Model (estado e regras de negócio),
+  View (apresentação) e Controller (entrada do usuário). Criado por Trygve
+  Reenskaug no Xerox PARC em 1979 para resolver o acoplamento entre interface e
+  lógica, o padrão continua sendo a base de muitos frameworks web e de interface.
 
 # Um tópico pode ter vários autores — liste um item por pessoa, na ordem em que
 # devem ser creditados. Todos entram no crédito, na citação e na lista de
 # contribuidores do site.
 autores:
-  - nome: "Nome Completo do Autor"
-    grupo: "Grupo 0" # opcional
-    github: "usuario-github" # opcional
-    orcid: ""          # opcional
-  - nome: "Nome Completo da Segunda Autora"
-    grupo: "Grupo 0"
-    github: "outro-usuario-github"
+  - nome: "Antonio Mário Jesus Vidal Leite"
+    grupo: "Grupo 2"
+    github: "https://github.com/amjvidal"
+    orcid: ""
+  - nome: "David Soares da Silva"
+    grupo: "Grupo 2"
+    github: "https://github.com/DavidSoares18"
+    orcid: ""
+  - nome: "Ian Kepler dos Santos Araujo"
+    grupo: "Grupo 3"
+    github: "https://github.com/iankepler5"
+    orcid: ""
+  - nome: "João Gabriel Marcos da Silva"
+    grupo: "Grupo 2"
+    github: "https://github.com/Jgabriel1800"
+    orcid: ""
+  - nome: "João Lucas da Silva Soares Oliveira"
+    grupo: "Grupo 2"
+    github: "https://github.com/jwaoluckas"
+    orcid: ""
+  - nome: "Lucas Matheus Elias Silva Teixeira dos Santos"
+    grupo: "Grupo 2"
+    github: "https://github.com/DavidSoares18/guia-arquitetura-de-software-MVC/commits?author=teixeiralucs"
     orcid: ""
 
-status: "modelo"        # rascunho | em-revisao | publicado | modelo
+status: "em-revisao" # rascunho | em-revisao | publicado | modelo
 data_criacao: "2026-08-30"
-ultima_revisao: "2026-08-30"
+ultima_revisao: "" #Grupo 3: Adicionar revisão
 revisado_por:
-  - "Nome do revisor par"
-  - "Nome do revisor de manutenção"
+  -  #Nome do revisor par
+  -  #Nome do revisor de manutenção
 
 # Estrutura pedagógica
 competencias:
-  - "Descreva em forma de verbo + objeto o que o leitor consegue fazer depois"
-  - "Ex: avaliar quando a decomposição em camadas prejudica desempenho"
-nivel_bloom: ["compreender", "analisar"]   # lembrar|compreender|aplicar|analisar|avaliar|criar
-pre_requisitos: []                          # slugs de outros tópicos
+  - "explicar os papéis do Model, View e Controller em uma aplicação"
+  - "identificar cenários onde o padrão arquitetural MVC é adequado"
+  - "aplicar os conceitos do MVC para estruturar o código de um projeto"
+nivel_bloom: ["compreender", "aplicar", "analisar"]
+pre_requisitos: []
 topicos_relacionados: []
-palavras_chave: ["palavra-chave", "keyword em inglês"]
+palavras_chave:
+  [
+    "mvc",
+    "arquitetura de software",
+    "model-view-controller",
+    "padrões arquiteturais",
+    "design patterns",
+  ]
 
 # Formatos entregues — o CI verifica a existência do que está marcado como true
 formatos:
   texto: true
   notebook:
     entregue: true
-    colab_url: "https://colab.research.google.com/..."
+    colab_url: "https://colab.research.google.com/drive/1YU8xSnv_4mdtfyn6IkyZ379yIs-aP2GT?usp=sharing"
   audio_notebooklm:
     entregue: true
-    arquivo: "assets/audio-notebooklm.m4a"   # ou deixe vazio e use url
+    arquivo: "assets/audio-notebooklm.m4a"
     url: ""
     duracao_min: 12
     transcricao: "assets/audio-transcricao.md"
   gem_gemini:
     entregue: true
-    url: "https://gemini.google.com/gem/..."
+    url: "https://gemini.google.com/gem-labs/1NPyLSiayocYBjSqoxQ-kLajmonoaU4mc"
     instrucoes: |
-      Cole aqui as instruções exatas usadas para configurar a Gem, para que
-      qualquer pessoa possa recriá-la ou melhorá-la.
-
-      Ex: "Você é um tutor de Arquitetura de Software especializado em <tópico>.
-      Baseie todas as respostas exclusivamente no texto e nas referências
-      fornecidas. Cite sempre a referência no formato [n]. Se a pergunta não for
-      coberta pelo material, diga isso em vez de improvisar."
+      Você é um tutor especialista em Arquitetura de Software com foco profundo no padrão Model-View-Controller (MVC) e na evolução dos padrões de interface de usuário (como MVP, MVVM, SPAs e a arquitetura unidirecional do React).
+      Seu objetivo é ajudar os alunos a compreender a separação de responsabilidades, o fluxo de dados e os papéis de cada componente na arquitetura.
+      Baseie todas as suas respostas exclusivamente no material do guia fornecido (textos, transcrições de áudio e referências bibliográficas).
+      Sempre cite a fonte ou a referência ao explicar um conceito (ex: "Segundo o comparativo da Baidu..." ou "[1]").
+      Seja didático, utilize analogias do mundo real (como a analogia do restaurante ou do diplomata da ONU) e encoraje o pensamento crítico do aluno.
+      Se a pergunta do aluno não for coberta pelo material fornecido, informe educadamente que o material atual não aborda esse ponto específico e não invente ou improvise informações de fontes externas.
   slides:
     entregue: true
-    num_slides: 16
+    num_slides: 15
+    arquivo: "slides.qmd"
   # opcionais
   video:
-    entregue: false
-    url: ""
+    entregue: true
+    arquivo: "assets/video-mvc.mp4"
   podcast:
     entregue: false
     url: ""
