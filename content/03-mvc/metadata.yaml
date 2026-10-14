@@ -45,7 +45,7 @@ formatos:
   texto: true
   notebook:
     entregue: true
-    colab_url: "https://colab.research.google.com/drive/1YU8xSnv_4mdtfyn6IkyZ379yIs-aP2GT?usp=sharing"
+    colab_url: "https://colab.research.google.com/drive/1GiyY0wrC_AD0KsTNtF_1jRdxEOF3XsCk?usp=sharing"
   audio_notebooklm:
     entregue: true
     arquivo: "assets/audio-notebooklm.m4a"
