@@ -8,7 +8,7 @@ author:
   - name: "João Gabriel Marcos da Silva"
   - name: "João Lucas da Silva Soares Oliveira"
   - name: "Lucas Matheus Elias Silva Teixeira dos Santos"
-date: 2026-08-30
+date: 2026-10-14
 date-modified: last-modified
 bibliography: referencias.bib
 citation:
