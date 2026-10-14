@@ -1,9 +1,13 @@
 ---
-title: "Tópico modelo"
-subtitle: "Estrutura e profundidade esperadas de uma contribuição"
+title: "Padrão Arquitetural MVC"
+subtitle: "Model-View-Controller: Estrutura, Responsabilidades e Aplicações"
 author:
-  - name: "Nome Completo do Autor"
-  - name: "Nome Completo da Segunda Autora"
+  - name: "Antônio Mário Jesus Vidal Leite"
+  - name: "David Soares da Silva"
+  - name: "Ian Képler dos Santos Araújo"
+  - name: "João Gabriel Marcos da Silva"
+  - name: "João Lucas da Silva Soares Oliveira"
+  - name: "Lucas Matheus Elias Silva Teixeira dos Santos"
 date: 2026-08-30
 date-modified: last-modified
 bibliography: referencias.bib
@@ -11,179 +15,486 @@ citation:
   type: webpage
   container-title: "Guia Aberto de Arquitetura de Software"
 license: "CC BY-NC 4.0"
-keywords: ["palavra-chave", "keyword"]
+keywords:
+  - "MVC"
+  - "Model-View-Controller"
+  - "Padrões Arquiteturais"
+  - "Arquitetura de Software"
+  - "Separação de Responsabilidades"
+  - "Desenvolvimento de Software"
 ---
 
 ::: {.meta-topico}
 <dl>
 <dt>Competências</dt>
-<dd>Avaliar quando um estilo arquitetural é adequado ao problema</dd>
+<dd>Compreender o padrão arquitetural MVC, identificar as responsabilidades dos componentes Model, View e Controller, analisar suas interações e avaliar suas vantagens, limitações e aplicações no desenvolvimento de software.</dd>
+
 <dt>Pré-requisitos</dt>
-<dd>Nenhum</dd>
+<dd>Conhecimentos básicos de programação, orientação a objetos e conceitos fundamentais de desenvolvimento de software.</dd>
+
 <dt>Formatos</dt>
 <dd>
-[texto]{.formato} [notebook](notebook.ipynb){.formato} [áudio]{.formato} [gem]{.formato} [slides](slides.qmd){.formato}
+[texto]{.formato} [notebook](notebook.ipynb){.formato} [slides](slides.qmd){.formato}
 </dd>
 </dl>
 :::
 
-::: {.callout-note}
-## Como usar esta página
-Esta é a página modelo do projeto. A estrutura abaixo é obrigatória; o conteúdo é
-ilustrativo e deve ser substituído. Copie a pasta `content/00-modelo/` inteira,
-renomeie para `content/NN-seu-topico/` e substitua tudo — inclusive
-`metadata.yaml`, `referencias.bib`, etc.
-:::
-
 ## Definição e contexto
 
-Abra definindo o conceito com precisão, em uma ou duas frases, antes de qualquer
-digressão histórica. O leitor que chegou aqui de uma busca precisa saber em dez
-segundos se está na página certa.
+O **Model-View-Controller (MVC)** é um padrão arquitetural utilizado no desenvolvimento de software que propõe a separação
+de uma aplicação em três componentes principais: Model (Modelo), View (Visão) e Controller (Controlador). Cada componente
+possui responsabilidades específicas, permitindo organizar as regras de negócio, a apresentação das informações e o
+processamento das interações do usuário. Essa divisão busca reduzir o acoplamento entre a interface e a lógica da aplicação,
+favorecendo a manutenção, a reutilização de código e a evolução do sistema [@fowler2006guiarchitectures].
 
-Depois, situe o problema. Todo estilo arquitetural existe porque alguma
-dificuldade concreta apareceu antes dele: acoplamento excessivo, impossibilidade
-de evoluir partes independentes, custo de coordenação entre equipes. Nomeie essa
-dificuldade. Um texto que apresenta a solução sem apresentar o problema ensina a
-decorar, não a decidir.
+O MVC surgiu no final da década de 1970, a partir dos trabalhos de Trygve Reenskaug no centro de pesquisas Xerox PARC, durante
+o desenvolvimento de interfaces gráficas utilizando a linguagem Smalltalk. Sua criação esteve relacionada à necessidade de
+organizar a interação entre os usuários e as informações representadas pelo sistema, permitindo diferentes formas de visualização
+e manipulação dos mesmos dados. Posteriormente, o padrão influenciou diferentes tecnologias e frameworks de desenvolvimento de
+aplicações [@krasner1988cookbook].
 
-O critério de decomposição modular proposto por Parnas [@parnas1972modularization]
-é um bom exemplo de como uma decisão arquitetural nasce de um problema observado:
-a dificuldade de modificar sistemas cujos módulos foram divididos por etapas de
-processamento em vez de por informação escondida.
+Um dos principais problemas enfrentados em aplicações que não possuem uma separação adequada de responsabilidades é a concentração
+de regras de negócio, manipulação de dados e elementos de interface em um mesmo componente. Essa organização aumenta o acoplamento
+e pode dificultar a manutenção, os testes e a implementação de novas funcionalidades. O MVC procura reduzir esses problemas ao
+estabelecer responsabilidades distintas para cada parte da aplicação, permitindo que mudanças na apresentação tenham menor impacto
+sobre as regras de negócio [@fowler2006guiarchitectures].
 
-::: {.callout-tip}
-## Sobre as citações
-Cite com `[@chave2023]`, que o Quarto converte em `[1]`, `[2]` automaticamente e
-usa para montar a lista de referências no fim da página. Nunca escreva `[1]` na
-mão: a numeração muda quando você insere uma citação nova, e o vínculo com a
-bibliografia se perde.
-
-Para citar uma seção específica de um livro longo, use
-`[@bass2021software, cap. 13]` — isso é obrigatório em livros de referência.
-:::
+Embora sua implementação varie entre diferentes tecnologias, o princípio fundamental do MVC permanece relacionado à separação entre
+a lógica de domínio e a lógica de apresentação. No MVC clássico, as Views podem observar alterações no Model para atualizar as
+informações apresentadas. Já em diversas implementações web, o Controller coordena as requisições e disponibiliza os dados necessários
+para a geração da resposta. Essas diferenças demonstram a evolução do padrão e a importância de compreender suas responsabilidades, em
+vez de associá-lo a um único fluxo de comunicação [@fowler2006guiarchitectures].
 
 ## Estrutura e componentes
-###Model
 
-###View
+O padrão arquitetural Model-View-Controller (MVC) organiza as responsabilidades de uma aplicação em três componentes principais: Model,
+View e Controller. Essa divisão procura separar a lógica de domínio dos mecanismos de apresentação e interação com o usuário, permitindo
+que cada componente desempenhe funções específicas. Embora a comunicação entre essas partes possa variar conforme a tecnologia e o framework
+utilizados, a separação de responsabilidades permanece como um dos fundamentos do padrão [@fowler2006guiarchitectures].
 
-###Controller
-O **Controller** foi definido originalmente como o componente que interpreta
-eventos de entrada do usuário e os traduz em comandos para o Model e a View
-[@krasner1988cookbook]. Ele recebe o evento — uma submissão de formulário,
-um clique, uma requisição HTTP —, aciona o Model para executar a lógica de
-negócio e seleciona qual View deve responder (@fig-estrutura). Apesar do nome
-"MVC" ser usado de forma inconsistente entre frameworks, o princípio central
-se mantém: separar a lógica de apresentação da lógica de domínio, sincronizando
-o estado por meio de eventos [@fowler2006guiarchitectures].
+### Model
 
-É proibido ao Controller conter lógica de negócio — validação de regra de
-domínio pertence ao Model — assim como é proibido formatar ou renderizar
-a saída diretamente, responsabilidade exclusiva da View. Também não deve
-acessar armazenamento ou persistência diretamente, contornando o Model.
+O **Model (Modelo)** é o componente responsável por representar os dados, o estado e as regras de negócio da aplicação. Ele concentra as
+operações relacionadas ao domínio do sistema, estabelecendo como as informações devem ser manipuladas e quais condições precisam ser
+respeitadas durante sua execução [@krasner1988cookbook].
 
-Quando essas restrições são violadas, o sintoma mais documentado é o *fat
-controller*: o controller acumula lógica de negócio, transformação de dados e
-acesso à persistência, tornando-se difícil de testar isoladamente do ciclo de
-requisição e impossível de reaproveitar entre, por exemplo, uma API REST e uma
-interface web que usem a mesma regra [@pytel2010railsantipatterns, cap. 4].
+Uma característica fundamental do Model é sua independência em relação à interface do usuário. Isso significa que suas regras de negócio
+não devem depender diretamente de elementos visuais, como botões, formulários ou páginas web. Essa separação permite que o mesmo conjunto
+de regras seja utilizado por diferentes interfaces, favorecendo a reutilização de código, a manutenção e a realização de testes automatizados
+[@fowler2006guiarchitectures].
+
+No sistema de boletim escolar desenvolvido como exemplo aplicado,
+o Model é representado pela classe `Turma`, responsável por
+armazenar as notas dos estudantes, calcular suas médias e
+determinar suas situações acadêmicas. A classe também implementa
+a regra de aprovação por meio do método `aprovado()`, que compara
+a média obtida pelo aluno com o valor definido em `media_minima`.
+
+Essa organização permite modificar os critérios de aprovação
+sem alterar os componentes responsáveis pela apresentação
+das informações.
+
+O Model também pode participar do gerenciamento da persistência de dados, utilizando mecanismos como repositórios e serviços de acesso a dados. Entretanto, **Model não é sinônimo de banco de dados**: o banco armazena informações, enquanto o Model representa o domínio e suas regras. No notebook desenvolvido, os dados da turma permanecem em memória e não há banco de dados; a persistência não é necessária para demonstrar o padrão.
+
+### View
+
+A **View (Visão)** é o componente responsável pela apresentação das informações ao usuário. Sua principal função é apresentar os
+dados da aplicação de forma compreensível, por meio de interfaces gráficas, páginas web ou saídas textuais, conforme o contexto
+[@krasner1988cookbook].
+
+A View pode assumir diferentes formatos, dependendo da tecnologia empregada. Em aplicações web, geralmente é representada por páginas HTML e
+templates de apresentação. Em aplicações desktop, pode corresponder a janelas, formulários e componentes gráficos. Independentemente do ambiente,
+seu objetivo principal permanece relacionado à apresentação das informações, e não à execução das regras de negócio.
+
+No sistema de boletim escolar, as Views são implementadas pelas classes `TabelaView` e `ResumoView`, que apresentam saídas textuais no terminal. A primeira exibe os alunos, suas médias e situações acadêmicas; a segunda informa quantos estudantes estão aprovados em relação ao total da turma. Não são utilizadas interfaces gráficas nesse experimento.
+
+Ambas consultam os métodos do Model para obter os resultados,
+sem implementar diretamente a regra de aprovação. Dessa forma,
+uma alteração na média mínima não exige modificações na
+lógica dessas Views.
+
+No MVC clássico, a View pode consultar o estado do Model e observar suas alterações para atualizar a apresentação. Em implementações web, é comum
+que os dados necessários à renderização sejam disponibilizados pelo Controller. Essa diferença demonstra que o relacionamento entre os componentes
+pode variar conforme a implementação, sem comprometer o princípio da separação entre apresentação e domínio [@fowler2006guiarchitectures].
+
+Embora a View possa realizar operações relacionadas à formatação e exibição dos dados, recomenda-se evitar a concentração de regras de negócio nesse
+componente. Isso contribui para reduzir o acoplamento entre a interface e o domínio, facilitando alterações na apresentação sem modificar o comportamento
+essencial da aplicação.
+
+### Controller
+
+O **Controller (Controlador)** é responsável por interpretar as interações do usuário e coordenar as ações necessárias para atendê-las. No MVC clássico,
+esse componente recebe eventos de entrada, como cliques e comandos do teclado, e determina as operações correspondentes sobre o Model e, quando necessário,
+sobre a View [@krasner1988cookbook].
+
+Nas implementações web do MVC, o Controller normalmente recebe requisições HTTP, interpreta os parâmetros enviados, solicita operações ao Model ou aos
+serviços responsáveis pela lógica de negócio e seleciona a resposta apropriada. Em aplicações que utilizam templates, também pode selecionar a View e
+fornecer os dados necessários para sua renderização.
+
+No sistema de boletim escolar, o Controller é representado
+pela classe `BoletimController`, responsável por interpretar
+comandos relacionados à matrícula de alunos, ao lançamento
+de notas e à alteração da média mínima de aprovação.
+
+Ao receber um comando, o Controller identifica a operação
+solicitada e aciona o método correspondente da classe
+`Turma`. Por exemplo, o comando `media_minima 7.0` é
+interpretado pelo Controller, que solicita ao Model a
+alteração do critério de aprovação.
+
+O Controller não realiza diretamente o cálculo das médias
+nem determina a situação acadêmica dos estudantes, mantendo
+essas responsabilidades centralizadas no Model.
+
+Quando essas responsabilidades não são respeitadas, pode surgir o problema conhecido como *Fat Controller* (Controlador Obeso). Nesse cenário, o Controller
+acumula regras de negócio, acesso a dados e outras operações que deveriam estar distribuídas entre componentes especializados. Essa concentração aumenta o
+acoplamento, dificulta os testes e compromete a manutenção e a reutilização do código.
+
+Portanto, a responsabilidade central do Controller é coordenar o fluxo de interação da aplicação, preservando a separação entre apresentação e domínio.
+Essa organização contribui para a clareza da arquitetura e facilita a evolução independente de seus componentes [@fowler2006guiarchitectures].
+
+
 
 ```{mermaid}
 %%| label: fig-estrutura
-%%| fig-cap: "Componentes do MVC e a direção das dependências permitidas."
+%%| fig-cap: "Fluxo MVC do sistema de boletim escolar no notebook Python."
+
 flowchart TD
-    U[Usuário] --> V[View]
-    V -->|evento de entrada| C[Controller]
-    C -->|consulta / comanda| M[Model]
-    M -.->|notifica mudança| V
-    C -->|seleciona| V
-    M --> D[(Armazenamento)]
+    N["Células do notebook"] -->|enviam comandos| C[BoletimController]
+    C -->|matricula, lança notas e altera regras| M["Turma (Model)"]
+    M -.->|notifica mudanças - Observer| V1[TabelaView]
+    M -.->|notifica mudanças - Observer| V2[ResumoView]
+    V1 -->|consulta médias e aprovações| M
+    V2 -->|consulta resultados de aprovação| M
+    V1 -->|exibe boletim| S["Saída no terminal"]
+    V2 -->|exibe resumo| S
 ```
 
-Um estilo arquitetural se define tanto pelas conexões que autoriza quanto pelas
-que veda [@bass2021software, cap. 1]. Na @fig-estrutura, a conexão proibida mais
-importante é **View → Model direto**: a View não deve consultar nem modificar o
-Model diretamente, apenas reagir às notificações de mudança de estado que ele
-emite através do Controller. Essa restrição não é universal — variantes mais
-permissivas do padrão, como algumas implementações de MVVM, autorizam a View a
-ler o Model diretamente —, mas no MVC clássico é justamente essa fronteira que,
-quando violada, produz uma View acoplada a detalhes internos do domínio,
-inviabilizando a substituição de uma camada de apresentação por outra sem tocar
-no Model.
+Conforme apresentado na @fig-estrutura, as células do notebook enviam comandos previamente definidos ao `BoletimController`, que interpreta cada comando e encaminha a operação ao Model, representado pela classe `Turma`. O exemplo simula as interações com a aplicação, mas não possui um campo de entrada interativo.
+
+Quando ocorre alguma alteração nos dados ou nas regras de
+aprovação, o Model utiliza o padrão de projeto *Observer*
+para notificar as Views registradas. As classes `TabelaView`
+e `ResumoView` recebem essas notificações, consultam os
+dados atualizados do Model e apresentam os resultados
+correspondentes.
+
+Essa comunicação demonstra uma característica presente no
+MVC clássico: a possibilidade de as Views observarem o
+Model e consultarem diretamente seu estado. Dessa forma,
+o Controller não precisa conhecer os componentes de
+apresentação para que eles sejam atualizados
+[@fowler2006guiarchitectures].
+
+A separação entre os componentes contribui para a
+modularidade e a manutenção da aplicação. Entretanto,
+esses benefícios dependem da distribuição adequada das
+responsabilidades, evitando a duplicação de regras de
+negócio nas Views ou sua concentração indevida
+no Controller.
 
 ## Exemplo aplicado
 
-Traga um caso concreto e conecte-o ao notebook. O texto explica o raciocínio; o
-notebook mostra o código rodando. Os dois precisam falar do mesmo exemplo — se o
-texto discute um sistema de pedidos e o notebook implementa uma calculadora, a
-contribuição volta na revisão.
+Para demonstrar o funcionamento do padrão arquitetural Model-View-Controller (MVC), foi desenvolvido um sistema de gerenciamento de boletim escolar
+utilizando a linguagem Python. O sistema permite matricular alunos, registrar notas, calcular médias e determinar a situação acadêmica de cada estudante,
+considerando uma média mínima de aprovação.
 
-Um bom exemplo aplicado mostra três coisas:
+O exemplo apresenta duas formas de implementação: uma que respeita a separação de responsabilidades proposta pelo MVC e outra que concentra regras de negócio
+diretamente nos componentes de apresentação. A comparação permite observar como diferentes decisões de organização do código influenciam a modificabilidade,
+a consistência e a testabilidade da aplicação.
 
-1. **A implementação correta** — o conceito funcionando
-2. **A violação** — o que acontece quando a restrição do estilo é quebrada
-3. **A consequência mensurável** — o custo dessa violação, em acoplamento,
-   tempo de build, dificuldade de teste ou desempenho
+O cenário utilizado considera uma turma com três estudantes: Ana, Bruno e Carla, cujas médias são, respectivamente, 8,0, 5,0 e 6,5. Inicialmente, a média
+mínima necessária para aprovação é 6,0. Posteriormente, essa regra é alterada para 7,0, permitindo avaliar como cada implementação reage à mudança.
+
+### Implementação correta do MVC
+
+Na implementação que segue o MVC, o sistema é organizado em três componentes com responsabilidades distintas.
+
+O **Model**, representado pela classe `Turma`, é responsável por armazenar os dados dos alunos, registrar suas notas, calcular as médias e verificar se cada
+estudante atingiu a média mínima necessária para aprovação. A regra de negócio permanece centralizada no método `aprovado()`, que compara a média do estudante
+com o atributo `media_minima`.
+
+A **View** é representada por duas classes: `TabelaView` e `ResumoView`. A primeira apresenta uma tabela contendo os nomes, as médias e as situações acadêmicas
+dos estudantes. A segunda apresenta um resumo com a quantidade de alunos aprovados em relação ao total da turma. Ambas consultam o Model para obter as informações
+necessárias, sem implementar novamente a regra de aprovação.
+
+O **Controller**, implementado pela classe `BoletimController`, recebe comandos relacionados à matrícula de alunos, ao lançamento de notas e à alteração da média
+mínima. Sua responsabilidade é interpretar essas solicitações e encaminhá-las aos métodos correspondentes do Model, sem realizar diretamente os cálculos de
+média ou determinar a aprovação dos estudantes.
+
+A comunicação entre os componentes também utiliza o padrão de projeto *Observer*. Nesse mecanismo, as Views são registradas como observadoras do Model e recebem
+notificações quando ocorre alguma alteração em seu estado. Ao serem notificadas, consultam as informações atualizadas e apresentam novamente os resultados.
+
+O funcionamento da aplicação pode ser descrito pelas seguintes etapas:
+
+1. Uma célula do notebook envia um comando ao Controller, simulando uma solicitação de lançamento de nota.
+2. O Controller interpreta o comando e solicita a operação correspondente ao Model.
+3. O Model atualiza os dados da turma e executa as regras de negócio necessárias.
+4. Após a alteração, o Model notifica as Views registradas como observadoras.
+5. As Views consultam os dados atualizados e imprimem as informações no terminal.
+
+Quando a média mínima de aprovação é alterada de 6,0 para 7,0, a mudança ocorre no Model por meio do método `mudar_media_minima()`. As duas Views recebem a
+notificação e passam a utilizar a nova regra de aprovação.
+
+Nesse cenário, Ana permanece aprovada com média 8,0, enquanto Bruno, com média 5,0, e Carla, com média 6,5, são considerados reprovados. Tanto a tabela quanto
+o resumo apresentam resultados consistentes, indicando apenas uma aprovação na turma.
+
+A centralização da regra no Model permite que a alteração seja realizada sem modificar o código das Views. Além disso, a lógica de aprovação pode ser testada
+independentemente dos componentes de apresentação, favorecendo a testabilidade da aplicação [@fowler2006guiarchitectures].
+
+### Violação das responsabilidades do MVC
+
+Para evidenciar as consequências de uma organização inadequada, o notebook apresenta uma segunda implementação, denominada versão *atalho*.
+
+Nessa versão, os dados dos alunos são armazenados diretamente em um dicionário Python, enquanto as classes `TabelaAtalho` e `ResumoAtalho` calculam as médias e
+verificam individualmente as condições de aprovação.
+
+Diferentemente da implementação MVC, não existe um componente de domínio responsável por centralizar essa regra. Cada componente de apresentação mantém sua própria
+verificação da média mínima, inicialmente estabelecida em 6,0.
+
+Embora essa abordagem produza resultados corretos no cenário inicial, ela introduz duplicação de lógica de negócio. Consequentemente, qualquer alteração na
+regra de aprovação exige a atualização de todos os componentes que possuem essa verificação.
+
+O problema é demonstrado quando a média mínima passa de 6,0 para 7,0. Na implementação apresentada, somente a tabela é atualizada, por meio da classe `TabelaAtalhoV2`,
+enquanto o resumo continua utilizando a regra anterior.
+
+Como consequência, os componentes passam a apresentar resultados contraditórios: a tabela considera Carla reprovada, pois sua média é 6,5, enquanto o resumo continua
+contabilizando sua aprovação.
+
+Essa inconsistência ocorre porque uma mesma regra de negócio foi implementada em diferentes pontos da aplicação. A ausência de centralização aumenta o risco de
+divergências e dificulta a manutenção, especialmente quando novas interfaces ou funcionalidades precisam utilizar os mesmos critérios de aprovação.
+
+### Consequências mensuráveis
+
+O notebook apresenta uma comparação entre as implementações, considerando a quantidade de componentes que possuem a regra de aprovação e a possibilidade de
+realizar testes independentemente da interface.
+
+Para identificar os pontos em que a regra está implementada, o notebook utiliza o módulo `dis` da biblioteca padrão do Python. A análise procura, no bytecode dos métodos das classes estudadas, comparações com o operador `>=` associado à regra de aprovação. Esse procedimento é uma verificação específica do exemplo, não um detector geral de regras de negócio.
+
+Os resultados apresentados são:
+
+| Critério | Implementação MVC | Implementação com violação |
+|---|---|---|
+| Componentes que implementam a regra de aprovação | 1 | 2 |
+| Localização da regra | `Turma` | `TabelaAtalhoV2` e `ResumoAtalho` |
+| Teste isolado da regra de domínio | Possível diretamente no Model | Não há Model separado para esse teste |
+| Resultado da tabela após a mudança | 1 aprovado | 1 aprovado |
+| Resultado do resumo após a mudança | 1 aprovado | 2 aprovados |
+| Consistência entre as apresentações | Preservada | Comprometida |
+
+A análise evidencia que, no exemplo desenvolvido, a implementação MVC mantém a regra de aprovação em um único componente, enquanto a versão com violação
+distribui a mesma decisão entre dois componentes.
+
+O notebook também apresenta uma projeção para sistemas com até cinco Views. Considerando que cada nova View da versão inadequada reproduza a regra de
+aprovação, a quantidade de pontos que precisam ser atualizados cresce proporcionalmente ao número de apresentações. Na implementação MVC demonstrada,
+a regra permanece centralizada no Model.
+
+Essa projeção representa o comportamento esperado sob a hipótese de duplicação da regra em cada nova View, e não uma medição de desempenho computacional.
+
+Outro aspecto demonstrado é a testabilidade. Na implementação MVC, o método `aprovado()` pode ser testado diretamente por meio de uma instância da classe
+`Turma`, sem necessidade de criar Views ou Controllers. Isso permite verificar o comportamento da regra de negócio de maneira independente da apresentação.
+
+Portanto, a comparação demonstra como a centralização das regras de domínio pode contribuir para a modificabilidade, a consistência e a testabilidade da
+aplicação. Em contrapartida, a implementação MVC exige uma organização estrutural mais elaborada, incluindo componentes separados e um mecanismo de notificação
+entre Model e Views.
+
+### Relação com o exemplo executável
+
+O notebook complementar apresenta o código Python utilizado para implementar os dois cenários, demonstrando suas diferenças por meio do lançamento de notas,
+da alteração da média mínima e da comparação dos resultados.
+
+A execução permite observar tanto a atualização consistente das Views na implementação MVC quanto a divergência provocada pela duplicação da regra de aprovação
+na versão alternativa.
+
+O experimento também inclui testes isolados do Model e uma análise da quantidade de componentes responsáveis pela decisão de aprovação, fornecendo evidências
+práticas para a discussão sobre separação de responsabilidades.
+
 
 ::: {.callout-note}
 ## Exemplo executável
-O notebook deste tópico está em
-[`notebook.ipynb`](notebook.ipynb) e pode ser aberto direto no
-[Google Colab](https://colab.research.google.com/).
 
-O notebook precisa rodar de ponta a ponta em ambiente limpo. Teste no Colab antes
-de abrir o PR — funcionar na sua máquina não é suficiente.
+A implementação prática está disponível no
+[`notebook.ipynb`](notebook.ipynb).
+
+O notebook apresenta um sistema de boletim escolar em Python,
+comparando uma implementação baseada no padrão MVC com uma
+versão que duplica regras de negócio nas Views.
+
+O experimento demonstra a alteração da média mínima de
+aprovação de 6,0 para 7,0, evidenciando diferenças de
+modificabilidade, consistência e testabilidade.
+
+O código utiliza apenas a biblioteca padrão do Python e
+pode ser executado no
+[Google Colab](https://colab.research.google.com/drive/1GiyY0wrC_AD0KsTNtF_1jRdxEOF3XsCk).
 :::
 
 ## Trade-offs
 
-Esta é a seção que separa um texto útil de um resumo de Wikipédia. Nenhum estilo
-arquitetural é melhor que outro em abstrato: cada um favorece certos atributos de
-qualidade ao custo de outros [@richards2020fundamentals].
+A adoção do padrão arquitetural Model-View-Controller (MVC) envolve benefícios e custos que devem ser considerados de acordo com as características e
+necessidades da aplicação. Embora a separação de responsabilidades favoreça atributos como modificabilidade, testabilidade e reutilização, ela também
+pode aumentar a complexidade estrutural e exigir mecanismos adicionais de comunicação entre os componentes [@richards2020fundamentals].
 
-Seja específico quanto à dimensão. "É mais escalável" não diz nada — escalável em
-quê? Número de requisições simultâneas? Número de desenvolvedores trabalhando em
-paralelo? Volume de dados?
+No sistema de boletim escolar desenvolvido como exemplo aplicado, esses trade-offs podem ser observados pela comparação entre a implementação MVC e a
+versão alternativa, na qual as regras de aprovação são incorporadas diretamente aos componentes de apresentação.
 
-| Atributo | Efeito | Por quê |
+### Modificabilidade e manutenção
+
+Uma das principais vantagens do MVC é a possibilidade de modificar regras de negócio sem alterar diretamente os componentes responsáveis pela apresentação dos dados.
+
+No exemplo desenvolvido, a regra de aprovação está centralizada no Model, representado pela classe `Turma`. Quando a média mínima é alterada de 6,0 para 7,0,
+a mudança é realizada por meio do método `mudar_media_minima()`, e ambas as Views passam a utilizar o novo valor.
+
+Na implementação alternativa, a regra aparece em dois componentes distintos: `TabelaAtalhoV2` e `ResumoAtalho`. A atualização de apenas um deles provoca uma inconsistência, demonstrando como a duplicação de responsabilidades pode dificultar a manutenção.
+
+Entretanto, essa vantagem depende de uma implementação adequada. Caso o MVC seja utilizado sem uma definição clara das responsabilidades, alterações simples
+podem continuar exigindo modificações em diversos componentes.
+
+### Testabilidade
+
+A separação entre as regras de negócio e a interface favorece a realização de testes isolados. No notebook, a classe `Turma` pode ser instanciada e testada
+independentemente das Views e do Controller, permitindo verificar a regra de aprovação sem executar os componentes de apresentação.
+
+Na versão alternativa, a lógica de aprovação está incorporada aos métodos responsáveis pela apresentação das informações. Consequentemente, os testes dessa
+regra ficam associados à execução desses métodos.
+
+Essa diferença evidencia a importância de manter as regras de domínio independentes dos mecanismos de interação e apresentação [@fowler2006guiarchitectures].
+
+### Complexidade estrutural
+
+Apesar dos benefícios, o MVC introduz uma estrutura mais elaborada em comparação com implementações diretas.
+
+No sistema desenvolvido, a implementação MVC utiliza classes específicas para o Model, as duas Views e o Controller, além de um mecanismo de observação para
+comunicar mudanças de estado.
+
+A versão alternativa apresenta inicialmente uma organização mais simples, com menos componentes e operações mais diretas. Entretanto, essa simplicidade inicial
+pode resultar em dificuldades de manutenção quando as regras de negócio são duplicadas.
+
+Portanto, o custo estrutural do MVC pode ser justificável em aplicações que possuem múltiplas interfaces, regras sujeitas a alterações ou necessidade de testes
+independentes. Em sistemas muito pequenos e de comportamento estável, essa organização pode representar complexidade adicional sem benefícios proporcionais.
+
+### Comunicação e atualização dos componentes
+
+No exemplo aplicado, a comunicação entre Model e Views utiliza o padrão *Observer*. Sempre que ocorre uma alteração nos dados da turma, o Model notifica os
+observadores registrados, permitindo que as apresentações sejam atualizadas automaticamente.
+
+Esse mecanismo reduz a necessidade de o Controller conhecer diretamente as Views e favorece a sincronização das informações exibidas.
+
+Por outro lado, exige a implementação e a manutenção de um mecanismo adicional de notificação. Além disso, no exemplo desenvolvido, todas as Views registradas
+são atualizadas quando ocorre uma mudança, mesmo que determinada alteração não seja relevante para todas elas.
+
+Em aplicações maiores, essa característica pode exigir estratégias para evitar atualizações desnecessárias. Entretanto, o notebook não apresenta medições de
+tempo ou consumo de recursos que permitam quantificar esse possível impacto no desempenho.
+
+### Síntese dos trade-offs
+
+A tabela a seguir resume os principais atributos de qualidade e os custos associados ao MVC, considerando o exemplo implementado.
+
+| Atributo | Efeito do MVC | Justificativa |
 |---|---|---|
-| Modificabilidade | Favorecida | Mudança em uma camada não propaga, desde que a interface se mantenha |
-| Desempenho | Comprometido | Cada requisição atravessa todas as camadas, somando latência |
-| Testabilidade | Favorecida | Camadas podem ser substituídas por dublês em teste |
-| Simplicidade operacional | Comprometida | Mais partes para implantar e monitorar |
+| Modificabilidade | Favorecida | A regra de aprovação permanece centralizada no Model. |
+| Testabilidade | Favorecida | A lógica de aprovação pode ser testada sem instanciar Views ou Controller. |
+| Reutilização | Favorecida | Diferentes Views utilizam as mesmas regras do Model. |
+| Consistência | Favorecida | As duas Views consultam a mesma regra de aprovação. |
+| Complexidade estrutural | Aumentada | São necessários componentes separados e um mecanismo de observação. |
+| Simplicidade inicial | Comprometida | A implementação exige mais organização do que a versão alternativa. |
+| Desempenho | Dependente da implementação | As notificações podem provocar atualizações desnecessárias, mas esse custo não foi medido. |
+
+A análise demonstra que o MVC não elimina a complexidade de uma aplicação, mas procura distribuí-la de maneira organizada entre componentes com
+responsabilidades distintas.
+
+No sistema de boletim escolar, os benefícios tornam-se evidentes quando a regra de aprovação é modificada: a implementação MVC mantém os resultados
+consistentes nas duas Views, enquanto a versão alternativa apresenta informações contraditórias devido à duplicação da regra.
+
+Dessa forma, a adoção do MVC representa uma decisão arquitetural que prioriza a separação de responsabilidades e a facilidade de evolução do sistema,
+assumindo como contrapartida uma maior complexidade inicial de implementação e coordenação entre seus componentes.
 
 ## Quando usar e quando não usar
 
-Feche com critérios de decisão acionáveis, na forma de condições verificáveis, não
-de recomendações vagas.
+A escolha do padrão arquitetural Model-View-Controller (MVC) deve considerar as características da aplicação, a complexidade das regras de negócio,
+a necessidade de manutenção e a existência de diferentes formas de apresentação dos dados. Embora o MVC favoreça a separação de responsabilidades,
+sua adoção nem sempre representa a alternativa mais adequada, especialmente em sistemas pequenos e com funcionalidades limitadas [@richards2020fundamentals].
 
-**Considere usar quando:**
+A decisão deve considerar os benefícios esperados em relação ao custo adicional de estruturar e coordenar os componentes Model, View e Controller.
 
-- A aplicação possui regras de negócio que precisam ser rigorosamente separadas da apresentação (interface)
-- Múltiplas interfaces de usuário (Views) precisam interagir com e exibir os mesmos dados do domínio (Model)
-- Há necessidade de desenvolvimento paralelo, onde desenvolvedores focados em UI (View) e lógica (Model) podem trabalhar independentemente
+### Considere usar quando
 
-**Evite quando:**
+- **A aplicação possui regras de negócio que precisam permanecer independentes da interface:** sistemas que realizam validações, cálculos ou operações
+específicas do domínio podem se beneficiar da centralização dessas responsabilidades no Model. No sistema de boletim escolar, por exemplo, a regra de
+aprovação é implementada na classe `Turma`, independentemente das Views utilizadas.
 
-- A aplicação é pequena, simples e sem muita lógica de negócio, onde a complexidade do MVC resulta em *overengineering*
-- O projeto é focado majoritariamente em visualização de dados estáticos ou prototipagem rápida, sem manipulação de estado complexo
+- **Existem múltiplas formas de apresentação das mesmas informações:** quando diferentes interfaces precisam consultar os mesmos dados e regras, a separação
+proposta pelo MVC favorece a reutilização. No exemplo desenvolvido, `TabelaView` e `ResumoView` apresentam informações distintas, mas utilizam o mesmo Model
+para determinar a situação acadêmica dos alunos.
 
-**Sinais de que a escolha foi errada:**
+- **As regras de negócio estão sujeitas a alterações:** aplicações que precisam evoluir ao longo do tempo podem se beneficiar da concentração das regras de
+domínio em componentes específicos. No notebook, a alteração da média mínima de 6,0 para 7,0 ocorre no Model, sem exigir modificações na lógica de aprovação
+das Views.
 
-- O Controller está acumulando lógica de negócio e regras que deveriam pertencer ao Model (*Fat Controller* ou Controlador Obeso)
-- Modificações simples na aplicação exigem alterações em várias classes ou arquivos (Model, View e Controller) sem trazer benefícios claros de organização
+- **Há necessidade de testes independentes da interface:** quando as regras de negócio precisam ser verificadas por testes automatizados, a separação entre domínio e apresentação facilita a criação de testes isolados. O notebook demonstra essa possibilidade ao testar a classe `Turma` sem instanciar Views ou Controller.
+
+- **O projeto exige manutenção contínua ou desenvolvimento por diferentes integrantes:** a divisão de responsabilidades pode facilitar a organização do trabalho,
+permitindo que alterações na apresentação e nas regras de negócio sejam realizadas com menor interferência entre os componentes, desde que suas interfaces de
+comunicação estejam bem definidas.
+
+### Evite quando
+
+- **A aplicação é muito pequena e possui regras de negócio simples e estáveis:** programas que executam poucas operações e não apresentam necessidade de evolução
+significativa podem não justificar a criação de componentes separados. Nesses casos, a estrutura do MVC pode aumentar a quantidade de código sem proporcionar benefícios
+relevantes.
+
+- **O sistema é destinado apenas à apresentação de conteúdo estático:** aplicações cuja finalidade é exibir informações sem manipulação significativa de estado ou
+regras de negócio podem utilizar soluções mais simples, sem a necessidade de uma estrutura MVC completa.
+
+- **O projeto consiste em um protótipo descartável de baixa complexidade:** quando o objetivo é apenas validar rapidamente uma ideia, sem previsão de manutenção
+ou ampliação, a organização adicional exigida pelo MVC pode representar um custo desnecessário.
+
+- **O custo de estruturar os componentes supera os benefícios esperados:** quando a separação entre Model, View e Controller exige várias classes e mecanismos
+de comunicação para realizar operações muito simples, deve-se avaliar se uma abordagem menos complexa atenderia melhor aos requisitos.
+
+### Sinais de que a escolha pode ter sido inadequada
+
+A adequação do MVC também pode ser avaliada durante o desenvolvimento e a manutenção da aplicação. Alguns sinais indicam que a arquitetura escolhida talvez não
+corresponda às necessidades reais do sistema:
+
+- A maior parte do código é dedicada à comunicação entre componentes, enquanto as funcionalidades implementadas permanecem muito simples.
+- Alterações pequenas exigem modificações em diversos arquivos, sem oferecer benefícios perceptíveis de organização, reutilização ou isolamento de responsabilidades.
+- A aplicação possui apenas operações elementares, sem regras de negócio relevantes ou perspectivas de crescimento que justifiquem a estrutura adotada.
+- A separação dos componentes aumenta significativamente a dificuldade de compreender o funcionamento do sistema, sem melhorar sua manutenção ou testabilidade.
+
+Entretanto, é importante diferenciar uma **escolha arquitetural inadequada** de uma **implementação inadequada do padrão**.
+
+Problemas como *Fat Controller*, duplicação de regras de negócio nas Views ou dependência excessiva da interface em relação aos detalhes internos do domínio não
+significam, necessariamente, que o MVC foi uma escolha incorreta. Esses problemas podem indicar que as responsabilidades do padrão não foram distribuídas adequadamente.
+
+No exemplo do boletim escolar, a versão alternativa apresenta uma inconsistência porque a regra de aprovação está duplicada em componentes de apresentação. Esse
+resultado demonstra o custo de não centralizar a regra de negócio, mas não significa que qualquer aplicação simples precise obrigatoriamente adotar MVC.
+
+### Avaliação no exemplo aplicado
+
+No sistema de boletim escolar desenvolvido, a adoção do MVC é justificável principalmente pela existência de duas Views que dependem das mesmas regras de negócio
+e pela necessidade de permitir alterações no critério de aprovação.
+
+A centralização da lógica na classe `Turma` permite que diferentes apresentações utilizem os mesmos resultados e que mudanças nas regras sejam refletidas de
+maneira consistente.
+
+Entretanto, caso o sistema tivesse como única finalidade calcular uma média e exibir seu resultado uma única vez, sem múltiplas apresentações ou necessidade de
+evolução, a implementação completa do MVC poderia representar uma complexidade desnecessária.
+
+Portanto, o MVC deve ser considerado quando os benefícios relacionados à separação de responsabilidades, à modificabilidade e à testabilidade justificarem o
+custo de organização dos componentes. Sua adoção deve resultar de uma análise das necessidades concretas da aplicação, e não da suposição de que uma arquitetura
+mais estruturada seja necessariamente superior [@fowler2006guiarchitectures; @richards2020fundamentals].
 
 ::: {.callout-note}
 ## Slides deste tópico
-A apresentação está em [`slides.qmd`](slides.qmd) — 16 slides para uma fala de
-20 minutos, com os mesmos exemplos e trade-offs deste texto.
+
+A apresentação complementar deste tópico pode ser acessada em
+[`slides.qmd`](slides.qmd). Seu conteúdo deve acompanhar a discussão
+do Model, da View e do Controller, o exemplo do boletim escolar e
+a análise dos trade-offs apresentados nesta página.
 :::
 
 ## Referências
-
-As referências abaixo são geradas automaticamente a partir de `referencias.bib`.
-Não escreva esta lista à mão.
 
 ::: {#refs}
 :::
@@ -191,9 +502,9 @@ Não escreva esta lista à mão.
 ::: {.como-citar}
 **Como citar este tópico**
 
-Nome Completo do Autor; Nome Completo da Segunda Autora. "Tópico modelo".
-*Guia Aberto de Arquitetura de Software*, 2026. Disponível em:
-<https://ifpe-belojardim-es.github.io/guia-arquitetura-de-software/content/00-modelo/>. Licenciado sob CC BY-NC 4.0.
-
-Vários autores: separe por ponto e vírgula, na mesma ordem do `metadata.yaml`.
+Antônio Mário Jesus Vidal Leite; David Soares da Silva; Ian Képler dos Santos Araújo; João Gabriel Marcos da Silva; João Lucas da Silva Soares Oliveira; Lucas Matheus Elias Silva Teixeira dos Santos. "Padrão Arquitetural MVC".
+*Guia Aberto de Arquitetura de Software*, 2026.
+Disponível em:
+<https://ifpe-belojardim-es.github.io/guia-arquitetura-de-software/content/03-mvc/>.
+Licenciado sob CC BY-NC 4.0.
 :::
