@@ -22,6 +22,8 @@ format:
     footer: "Guia Aberto de Arquitetura de Software · CC BY-NC 4.0"
 ---
 
+## Decodificando padrões de arquitetura {.arte background-image="assets/slide-01-capa.jpg" background-size="contain" background-color="#f2f0eb" aria-label="Capa: Decodificando Padrões de Arquitetura. Uma jornada visual pelo MVC, MVP e MVVM."}
+
 ```{=html}
 <style>
 /* Os títulos abaixo ficam no HTML (para leitores de tela e para a navegação),
@@ -34,8 +36,6 @@ format:
 }
 </style>
 ```
-
-## Decodificando padrões de arquitetura {.arte background-image="assets/slide-01-capa.jpg" background-size="contain" background-color="#f2f0eb" aria-label="Capa: Decodificando Padrões de Arquitetura. Uma jornada visual pelo MVC, MVP e MVVM."}
 
 ::: {.notes}
 Apresentação: João Gabriel.
@@ -56,11 +56,9 @@ Perguntar para a turma: quem já fez um trabalho em que o cálculo estava dentro
 ::: {.notes}
 Apresentação: David Soares.
 
-Trygve Reenskaug trabalhou nisso no Xerox PARC entre 1978 e 1979, e a nota técnica que descreve o MVC é de dezembro de 1979 [@reenskaug1979models]. O objetivo não era só organizar código: era deixar o usuário ver e manipular os mesmos dados de várias formas.
+Trygve Reenskaug trabalhou nisso no Xerox PARC entre 1978 e 1979, e a nota técnica que descreve o MVC é de dezembro de 1979 [@reenskaug1979mvc]. O objetivo não era só organizar código: era deixar o usuário ver e manipular os mesmos dados de várias formas.
 
 Quem documentou o uso na prática foram Krasner e Pope, em 1988 [@krasner1988cookbook]. E a ideia de fundo é mais velha ainda: separar responsabilidades [@dijkstra1982role] e esconder atrás de um módulo aquilo que mais muda [@parnas1972modularization].
-
-Obs.: a arte deste slide traz "1978". Se der tempo, corrigir para 1979, que é a data da nota técnica.
 :::
 
 ## As três partes {.arte background-image="assets/slide-04-tres-partes.jpg" background-size="contain" background-color="#0f3c78" aria-label="Modelo: dados e lógica de negócios. Visão: apresentação e interface. Controlador: o maestro das interações."}
@@ -166,7 +164,13 @@ Em tela rica e cheia de eventos, o Presenter precisa mandar em cada detalhe. Da�
 O Presenter vira ViewModel e o binding sincroniza os dois lados sozinho. É o padrão mais usado em interface pesada.
 :::
 
-## Os três lado a lado {.arte background-image="assets/slide-11-excluir-tarefa.jpg" background-size="contain" background-color="#0f3c78" aria-label="Comparação do mesmo clique em excluir tarefa nos três padrões: MVC, MVP e MVVM, passo a passo."}
+## Os três lado a lado: excluir tarefa {.smaller}
+
+| | MVC | MVP | MVVM |
+|---|---|---|---|
+| **Quem trata o clique** | Controlador | Presenter | ViewModel |
+| **Quem altera o Modelo** | Controlador deleta | Presenter deleta | ViewModel altera |
+| **Como a tela muda** | Visão recarrega a lista | Presenter manda a Visão remover a linha | Binding espelha a mudança |
 
 ::: {.notes}
 Mesma ação, três caminhos. No MVC o Controlador deleta e a Visão recarrega; no MVP o Presenter manda a Visão remover a linha; no MVVM o binding espelha a mudança.

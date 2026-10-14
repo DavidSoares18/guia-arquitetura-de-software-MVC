@@ -194,6 +194,10 @@ quando violada, produz uma View acoplada a detalhes internos do domínio,
 inviabilizando a substituição de uma camada de apresentação por outra sem tocar
 no Model.
 
+Em resumo, o que cada componente faz e o que lhe é vedado:
+
+{{< include _responsabilidades.md >}}
+
 ## Exemplo aplicado
 
 Traga um caso concreto e conecte-o ao notebook. O texto explica o raciocínio; o
@@ -212,7 +216,7 @@ Um bom exemplo aplicado mostra três coisas:
 ## Exemplo executável
 O notebook deste tópico está em
 [`notebook.ipynb`](notebook.ipynb) e pode ser aberto direto no
-[Google Colab](https://colab.research.google.com/).
+[Google Colab](https://colab.research.google.com/drive/1GiyY0wrC_AD0KsTNtF_1jRdxEOF3XsCk?usp=sharing).
 
 O notebook precisa rodar de ponta a ponta em ambiente limpo. Teste no Colab antes
 de abrir o PR — funcionar na sua máquina não é suficiente.
