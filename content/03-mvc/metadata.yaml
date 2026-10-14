@@ -15,30 +15,48 @@ resumo: >-
 # devem ser creditados. Todos entram no crédito, na citação e na lista de
 # contribuidores do site.
 autores:
-  - nome: "Nome Completo do Autor"
-    grupo: "Grupo 0" # opcional
-    github: "usuario-github" # opcional
+  - nome: "Antonio Mário Jesus Vidal Leite"
+    grupo: "Grupo 3" # opcional
+    github: "amjvidal" # opcional
     orcid: ""          # opcional
-  - nome: "Nome Completo da Segunda Autora"
-    grupo: "Grupo 0"
-    github: "outro-usuario-github"
+  - nome: "David Soares da Silva"
+    grupo: "Grupo 3"
+    github: "DavidSoares18"
+    orcid: ""
+  - nome: "Ian Képler dos Santos Araújo"
+    grupo: "Grupo 3"
+    github: "iankepler5"
+    orcid: ""
+  - nome: "João Gabriel Marcos da Silva"
+    grupo: "Grupo 3"
+    github: "Jgabriel1800"
+    orcid: ""
+  - nome: "João Lucas da Silva Soares Oliveira"
+    grupo: "Grupo 3"
+    github: "jwaoluckas"
+    orcid: ""
+  - nome: "Lucas Matheus Elias Silva Teixeira dos Santos"
+    grupo: "Grupo 3"
+    github: "teixeiralucs"
     orcid: ""
 
-status: "modelo"        # rascunho | em-revisao | publicado | modelo
+status: "em-revisao"        # rascunho | em-revisao | publicado | modelo
 data_criacao: "2026-08-30"
-ultima_revisao: "2026-08-30"
+ultima_revisao: "2026-10-14"
 revisado_por:
-  - "Nome do revisor par"
-  - "Nome do revisor de manutenção"
+  - "David Soares da Silva"
 
 # Estrutura pedagógica
 competencias:
-  - "Descreva em forma de verbo + objeto o que o leitor consegue fazer depois"
-  - "Ex: avaliar quando a decomposição em camadas prejudica desempenho"
-nivel_bloom: ["compreender", "analisar"]   # lembrar|compreender|aplicar|analisar|avaliar|criar
-pre_requisitos: []                          # slugs de outros tópicos
-topicos_relacionados: []
-palavras_chave: ["palavra-chave", "keyword em inglês"]
+  - "Distinguir as responsabilidades de Model, View e Controller em um sistema interativo"
+  - "Explicar como o mecanismo de notificação (padrão Observer) mantém o Model independente das Views"
+  - "Identificar violações da separação, como regra de negócio na View e Fat Controller, e seu impacto em modificabilidade e testabilidade"
+  - "Avaliar quando o MVC é adequado ao problema e quando ele representa overengineering"
+  - "Comparar o MVC clássico com sua adaptação para a web e com as variantes MVP e MVVM"
+nivel_bloom: ["compreender", "analisar", "avaliar"]   # lembrar|compreender|aplicar|analisar|avaliar|criar
+pre_requisitos: ["arquitetura-em-camadas"]    # slugs de outros tópicos
+topicos_relacionados: ["cliente-servidor"]
+palavras_chave: ["MVC", "Model-View-Controller", "padrão arquitetural", "architectural pattern", "separação de responsabilidades", "separation of concerns", "Observer", "MVP", "MVVM", "Fat Controller"]
 
 # Formatos entregues — o CI verifica a existência do que está marcado como true
 formatos:
