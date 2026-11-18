@@ -1,25 +1,36 @@
 ---
-title: "Tópico modelo"
-subtitle: "Estrutura e profundidade esperadas de uma contribuição"
+title: "Publish-Subscribe e Arquitetura Baseada em Eventos"
+subtitle: "Componentes que reagem a fatos sem precisar saber quem os anunciou"
 author:
-  - name: "Nome Completo do Autor"
-  - name: "Nome Completo da Segunda Autora"
-date: 2026-08-30
+  - name: "Antonio Mário Jesus Vidal Leite"
+  - name: "David Soares da Silva"
+  - name: "Ian Képler dos Santos Araújo"
+  - name: "João Gabriel Marcos da Silva"
+  - name: "João Lucas da Silva Soares Oliveira"
+  - name: "Lucas Matheus Elias Silva Teixeira dos Santos"
+date: 2026-11-17
 date-modified: last-modified
 bibliography: referencias.bib
 citation:
   type: webpage
   container-title: "Guia Aberto de Arquitetura de Software"
 license: "CC BY-NC 4.0"
-keywords: ["palavra-chave", "keyword"]
+keywords:
+  - "publish-subscribe"
+  - "arquitetura baseada em eventos"
+  - "event-driven architecture"
+  - "invocação implícita"
+  - "broker de mensagens"
+  - "consistência eventual"
+  - "idempotência"
 ---
 
 ::: {.meta-topico}
 <dl>
 <dt>Competências</dt>
-<dd>Avaliar quando um estilo arquitetural é adequado ao problema</dd>
+<dd>Explicar o que publicador, assinante, evento e broker fazem; distinguir publish-subscribe do padrão Observer; decidir o que deve ser evento e o que deve continuar como chamada direta; e proteger assinantes contra entrega duplicada e fora de ordem.</dd>
 <dt>Pré-requisitos</dt>
-<dd>Nenhum</dd>
+<dd>Noções de cliente-servidor e de microsserviços; o padrão Observer, visto no tópico de MVC, ajuda.</dd>
 <dt>Formatos</dt>
 <dd>
 [texto]{.formato} [notebook](notebook.ipynb){.formato} [áudio]{.formato} [gem]{.formato} [slides](slides.qmd){.formato}
@@ -27,134 +38,169 @@ keywords: ["palavra-chave", "keyword"]
 </dl>
 :::
 
-::: {.callout-note}
-## Como usar esta página
-Esta é a página modelo do projeto. A estrutura abaixo é obrigatória; o conteúdo é
-ilustrativo e deve ser substituído. Copie a pasta `content/00-modelo/` inteira,
-renomeie para `content/NN-seu-topico/` e substitua tudo — inclusive
-`metadata.yaml`, `referencias.bib`, etc.
-:::
-
 ## Definição e contexto
 
-Abra definindo o conceito com precisão, em uma ou duas frases, antes de qualquer
-digressão histórica. O leitor que chegou aqui de uma busca precisa saber em dez
-segundos se está na página certa.
+Pense numa loja virtual. Quando o cliente clica em "finalizar compra", o sistema precisa baixar o estoque, mandar um e-mail de confirmação, creditar pontos de fidelidade e atualizar a tela "Meus pedidos". O jeito mais direto de escrever isso é uma função que chama os quatro serviços, um depois do outro.
 
-Depois, situe o problema. Todo estilo arquitetural existe porque alguma
-dificuldade concreta apareceu antes dele: acoplamento excessivo, impossibilidade
-de evoluir partes independentes, custo de coordenação entre equipes. Nomeie essa
-dificuldade. Um texto que apresenta a solução sem apresentar o problema ensina a
-decorar, não a decidir.
+Funciona, mas o custo cresce junto com o sistema. A função de venda passa a conhecer todos esses serviços. O cliente espera a soma do tempo de todos eles, inclusive do e-mail. E, se o servidor de e-mail cair, a venda inteira falha. Quando o setor fiscal pedir a emissão de nota a cada pedido, alguém vai ter que abrir a função de venda e mexer nela de novo.
 
-O critério de decomposição modular proposto por Parnas [@parnas1972modularization]
-é um bom exemplo de como uma decisão arquitetural nasce de um problema observado:
-a dificuldade de modificar sistemas cujos módulos foram divididos por etapas de
-processamento em vez de por informação escondida.
+**Publish-subscribe** (publicar e assinar, ou simplesmente *pub/sub*) é a forma de comunicação que ataca esse problema. Em vez de chamar cada interessado, um componente **publica** um evento, e quem tiver **assinado** aquele tipo de evento é avisado. Quem publica não sabe quem vai receber, nem quantos são [@eugster2003many]. A loja passa a anunciar "um pedido foi criado", e e-mail, fidelidade e painel reagem por conta própria.
 
-::: {.callout-tip}
-## Sobre as citações
-Cite com `[@chave2023]`, que o Quarto converte em `[1]`, `[2]` automaticamente e
-usa para montar a lista de referências no fim da página. Nunca escreva `[1]` na
-mão: a numeração muda quando você insere uma citação nova, e o vínculo com a
-bibliografia se perde.
+**Arquitetura baseada em eventos** (*event-driven architecture*) é o estilo arquitetural que organiza o sistema inteiro dessa forma: componentes desacoplados que reagem a eventos, normalmente de modo assíncrono, e que podem publicar novos eventos em resposta [@richards2020fundamentals, cap. 14]. Vale separar os dois termos: pub/sub é o mecanismo de comunicação; arquitetura baseada em eventos é a decisão de estruturar o sistema em torno dele.
 
-Para citar uma seção específica de um livro longo, use
-`[@bass2021software, cap. 13]` — isso é obrigatório em livros de referência.
-:::
+### Um evento é um fato
+
+Um evento descreve algo que **já aconteceu**, por isso é nomeado no passado: `PedidoCriado`, `PagamentoAprovado`. Isso o diferencia de um comando, como `EnviarEmail`, que é uma ordem dirigida a alguém e espera que esse alguém a cumpra. Hohpe e Woolf tratam os dois como tipos diferentes de mensagem [@hohpe2003enterprise, cap. 5], e Fowler aponta que usar um evento como comando disfarçado traz de volta o acoplamento que se queria evitar [@fowler2017event].
+
+### De onde veio a ideia
+
+A ideia é anterior à internet comercial. Em 1990, Reiss descreveu o Field, um ambiente de programação que integrava suas ferramentas por mensagens: o depurador anunciava que tinha parado num ponto de interrupção, e o editor, sem ser chamado diretamente, rolava até a linha correspondente [@reiss1990connecting]. Garlan e Shaw catalogaram esse estilo com o nome de **invocação implícita**: o componente anuncia um evento, outros registram procedimentos para ele, e o próprio sistema chama esses procedimentos [@garlan1993introduction, seç. 3.3].
+
+Em 1993, a Information Bus levou o modelo para sistemas distribuídos com milhares de estações, em fábricas de semicondutores e mesas de operação financeira. Os assinantes escolhiam o que receber pelo **assunto** da mensagem, e a comunicação era anônima: quem publicava não sabia quem recebia [@oki1993information]. Hoje o mesmo modelo está em produtos como RabbitMQ e Apache Kafka [@dobbelaere2017kafka].
 
 ## Estrutura e componentes
 
-Descreva as partes que compõem o estilo e como se relacionam. Esta seção precisa
-de **pelo menos um diagrama seu** — não uma imagem copiada de um livro.
+O estilo tem quatro peças:
 
-Diagramas podem ser feitos em Mermaid direto no texto, o que tem a vantagem de
-ficarem versionados como código:
+- **Evento**: a mensagem que descreve o fato. Tem um tipo, os dados do fato e um identificador único.
+- **Publicador**: o componente onde o fato acontece. Ele só entrega o evento ao broker.
+- **Broker** (ou canal): o intermediário que recebe eventos e entrega uma cópia a cada assinante interessado. Hohpe e Woolf chamam esse canal de *Publish-Subscribe Channel* [@hohpe2003enterprise, cap. 4].
+- **Assinante**: o componente que registrou interesse num tipo de evento e reage quando ele chega.
 
 ```{mermaid}
 %%| label: fig-estrutura
-%%| fig-cap: "Componentes do estilo e a direção das dependências permitidas."
-flowchart TD
-    A[Componente de interface] --> B[Componente de aplicação]
-    B --> C[Componente de domínio]
-    C --> D[(Armazenamento)]
+%%| fig-cap: "A loja publica PedidoCriado no broker. Cada assinante tem a sua própria fila; nenhuma seta sai da loja em direção a eles."
+flowchart LR
+    L["Loja<br/>(publicador)"] -- "PedidoCriado" --> B(["Broker"])
+    B --> F1[["fila: notificação"]] --> N["Notificação<br/>(e-mail)"]
+    B --> F2[["fila: fidelidade"]] --> P["Fidelidade<br/>(pontos)"]
+    B --> F3[["fila: painel"]] --> M["Painel<br/>Meus pedidos"]
+    B -. "mensagens que falharam<br/>várias vezes" .-> D[("dead letter")]
 ```
 
-Ao descrever a estrutura, seja explícito sobre **o que é proibido**, não apenas
-sobre o que é permitido. Um estilo arquitetural se define tanto pelas conexões que
-autoriza quanto pelas que veda — e é a violação dessas restrições que degrada a
-arquitetura ao longo do tempo [@bass2021software, cap. 1].
+### Três formas de desacoplamento
+
+Eugster e coautores resumem o que pub/sub oferece em três dimensões [@eugster2003many]:
+
+- **Espaço**: publicador e assinantes não guardam referências uns aos outros. A loja não sabe que o serviço de fidelidade existe.
+- **Tempo**: eles não precisam estar no ar ao mesmo tempo. Se a fidelidade estiver em manutenção, os eventos esperam na fila dela.
+- **Sincronização**: o publicador não fica parado esperando. A loja publica e responde ao cliente.
+
+Essas dimensões ajudam a diferenciar pub/sub do padrão **Observer** [@gamma1994design, cap. 5], que você viu no [tópico de MVC](../03-mvc/index.qmd). No Observer, quem quer ser avisado se registra **diretamente** no objeto observado, que mantém a lista de observadores e os chama. O Observer pode até notificar de forma assíncrona, mas os dois lados continuam acoplados no espaço (um guarda referência ao outro) e no tempo (os dois precisam existir ao mesmo tempo) [@eugster2003many]. No pub/sub, essa lista sai do publicador e vai para o broker.
+
+### Como o assinante escolhe o que recebe
+
+A forma mais comum é por **tópico**: o assinante se inscreve em `PedidoCriado` e recebe todos os eventos desse tipo. Uma alternativa é a assinatura por **conteúdo**, em que o assinante descreve um filtro sobre os dados, como "pedidos acima de R$ 500". Ela é mais expressiva, mas obriga o broker a avaliar filtros em cada mensagem, e o trabalho de Carzaniga e coautores no serviço Siena mostra como esse poder de expressão disputa com a escalabilidade do roteamento [@carzaniga2001design].
+
+### Topologias: broker e mediador
+
+Richards e Ford descrevem duas topologias para o estilo [@richards2020fundamentals, cap. 14]. Na topologia **broker**, não existe coordenador: cada componente reage ao evento que lhe interessa e pode publicar outros, e o fluxo emerge dessa cadeia. Na topologia **mediador**, um componente central recebe o evento inicial e dispara os passos seguintes numa ordem definida, o que dá mais controle sobre o fluxo e sobre os erros, ao custo de mais acoplamento com o mediador. O exemplo deste tópico usa a topologia broker.
+
+### O que o estilo exige
+
+Um estilo se define tanto pelo que permite quanto pelo que proíbe. Em pub/sub, as restrições são:
+
+1. **O publicador não depende dos assinantes.** Ele não sabe quem são, não espera resposta e não muda quando um assinante entra ou sai.
+2. **O evento carrega o que os assinantes precisam.** Se cada assinante tiver que chamar a loja de volta para buscar os dados do pedido, o acoplamento volta pela porta dos fundos. Fowler chama de *event-carried state transfer* a prática de colocar no evento os dados necessários [@fowler2017event].
+3. **O assinante não assume entrega única nem ordem.** Esta é a restrição mais fácil de esquecer, e o exemplo aplicado mostra o que acontece quando ela é ignorada.
+
+A terceira restrição vem das garantias que um broker consegue oferecer. Há três níveis: no máximo uma vez (pode perder), pelo menos uma vez (pode repetir) e exatamente uma vez. Os dois primeiros são os comuns; o terceiro exige coordenação extra entre broker e consumidor e custa caro [@kleppmann2017designing, cap. 11; @dobbelaere2017kafka]. Por isso é comum ficar com "pelo menos uma vez" e fazer o assinante tolerar repetições. A ordem também é limitada: o Kafka só garante ordem dentro de uma partição, e o RabbitMQ dentro de um canal [@dobbelaere2017kafka].
+
+Os dois produtos também mostram que "broker" não é uma coisa só. No RabbitMQ, a mensagem fica numa fila e é apagada quando o consumidor confirma o recebimento. No Kafka, os eventos são gravados num log que fica guardado por um período configurado, e cada consumidor lê a partir da posição em que parou, o que permite reprocessar eventos antigos [@dobbelaere2017kafka].
 
 ## Exemplo aplicado
 
-Traga um caso concreto e conecte-o ao notebook. O texto explica o raciocínio; o
-notebook mostra o código rodando. Os dois precisam falar do mesmo exemplo — se o
-texto discute um sistema de pedidos e o notebook implementa uma calculadora, a
-contribuição volta na revisão.
+O [notebook](notebook.ipynb) implementa a loja da introdução duas vezes e mede as duas versões com os mesmos critérios. O broker foi escrito do zero, em poucas dezenas de linhas, para que cada peça fique visível. Ele roda num único processo e entrega as mensagens quando chamamos `entregar_pendentes()`, o que deixa os resultados reproduzíveis.
 
-Um bom exemplo aplicado mostra três coisas:
+### Versão com chamadas diretas
 
-1. **A implementação correta** — o conceito funcionando
-2. **A violação** — o que acontece quando a restrição do estilo é quebrada
-3. **A consequência mensurável** — o custo dessa violação, em acoplamento,
-   tempo de build, dificuldade de teste ou desempenho
+```python
+class LojaAcoplada:
+    def __init__(self, estoque, notificacao, fidelidade, painel):
+        ...
+
+    def finalizar_pedido(self, pedido):
+        self.estoque.baixar(pedido["produto"], pedido["quantidade"])
+        self.notificacao.enviar(pedido["cliente"], f"Pedido {pedido['id']} confirmado")
+        self.fidelidade.creditar(pedido["cliente"], pedido["valor"])
+        self.painel.registrar(pedido["id"], "confirmado")
+        return "confirmado"
+```
+
+### Versão com eventos
+
+```python
+class LojaComEventos:
+    def __init__(self, estoque, broker):
+        ...
+
+    def finalizar_pedido(self, pedido):
+        self.estoque.baixar(pedido["produto"], pedido["quantidade"])
+        self.broker.publicar(Evento("PedidoCriado", dict(pedido)))
+        return "confirmado"
+```
+
+Repare que o estoque **continua sendo uma chamada direta**. A loja não pode responder "confirmado" sem saber se a caneca existe, então essa verificação faz parte da venda. Se o estoque também fosse um assinante, dois clientes poderiam receber "confirmado" pela última unidade, e o sistema teria que cancelar uma das vendas depois. O critério que usamos é simples: **se a resposta ao cliente depende do resultado, é chamada direta; se é uma reação ao que já aconteceu, é evento.** Richards e Ford discutem essa mesma escolha entre o modelo baseado em requisição e o baseado em eventos [@richards2020fundamentals, cap. 14].
+
+### O que as medições mostraram
+
+| Medição | Chamadas diretas | Eventos |
+|---|---|---|
+| Serviços que a loja precisa conhecer | 4 | 2 (estoque e broker) |
+| Depois de incluir a nota fiscal | 5 (a loja foi editada) | 2 (a loja não mudou) |
+| Tempo de resposta ao cliente | cerca de 0,43 s | cerca de 0,01 s |
+| Venda com o e-mail fora do ar | recusada, mas a caneca já tinha saído do estoque | concluída; e-mail tentado 3 vezes e enviado à dead letter |
+| Fidelidade em manutenção durante 3 vendas | 3 vendas recusadas, 3 canecas fora do estoque e 3 e-mails de "confirmado" enviados | 3 vendas concluídas; 150 pontos creditados quando o serviço voltou |
+
+Os tempos variam um pouco de máquina para máquina, mas a diferença de ordem de grandeza se mantém: na versão acoplada o cliente espera a soma dos quatro serviços; na versão com eventos, só o estoque.
+
+### A violação: assinantes que ignoram as regras do estilo
+
+A segunda metade do notebook quebra a terceira restrição e mede o resultado.
+
+**Entrega duplicada.** O serviço de fidelidade credita os pontos, mas a confirmação de volta ao broker se perde. O broker entende que falhou e entrega de novo. Resultado: um pedido de R$ 50 gerou **100 pontos**. A correção é o *Idempotent Receiver* [@hohpe2003enterprise, cap. 10]: o assinante guarda o identificador dos eventos já tratados e ignora repetições. Com ela, o mesmo cenário gera 50 pontos. Repare que o broker continuou entregando duas vezes; quem resolveu foi o assinante.
+
+**Ordem trocada.** A cliente compra e cancela logo em seguida. Na primeira tentativa de gravar `PedidoCriado`, o banco do painel não responde, e a nova tentativa vai para o fim da fila, atrás de `PedidoCancelado`. O painel aplica o cancelamento e depois a criação, e a tela mostra **"confirmado" para um pedido cancelado**. A correção usada foi incluir no evento um número de versão do pedido: o painel ignora qualquer evento mais antigo do que o último que aplicou.
+
+Nenhuma das duas falhas existia na versão acoplada. Elas são o preço da entrega assíncrona com novas tentativas, e é por isso que a terceira restrição existe.
 
 ::: {.callout-note}
 ## Exemplo executável
-O notebook deste tópico está em
-[`notebook.ipynb`](notebook.ipynb) e pode ser aberto direto no
-[Google Colab](https://colab.research.google.com/).
-
-O notebook precisa rodar de ponta a ponta em ambiente limpo. Teste no Colab antes
-de abrir o PR — funcionar na sua máquina não é suficiente.
+O notebook deste tópico está em [`notebook.ipynb`](notebook.ipynb) e abre direto no
+[Google Colab](https://colab.research.google.com/github/IFPE-BeloJardim-ES/guia-arquitetura-de-software/blob/main/content/07-publish-subscribe-e-eventos/notebook.ipynb).
+Não precisa instalar nada: ele usa só a biblioteca padrão do Python.
 :::
 
 ## Trade-offs
 
-Esta é a seção que separa um texto útil de um resumo de Wikipédia. Nenhum estilo
-arquitetural é melhor que outro em abstrato: cada um favorece certos atributos de
-qualidade ao custo de outros [@richards2020fundamentals].
+Garlan e Shaw já apontavam, em 1993, os dois lados da invocação implícita. A favor, reúso e evolução: um componente novo entra apenas registrando interesse num evento. Contra, a perda de controle: quem anuncia não sabe quem vai responder, em que ordem, nem quando, e por isso fica mais difícil raciocinar sobre a correção do sistema [@garlan1993introduction, seç. 3.3]. Mais de trinta anos depois, a tabela abaixo mostra os mesmos dois lados no exemplo da loja.
 
-Seja específico quanto à dimensão. "É mais escalável" não diz nada — escalável em
-quê? Número de requisições simultâneas? Número de desenvolvedores trabalhando em
-paralelo? Volume de dados?
+{{< include _trade-offs.md >}}
 
-| Atributo | Efeito | Por quê |
-|---|---|---|
-| Modificabilidade | Favorecida | Mudança em uma camada não propaga, desde que a interface se mantenha |
-| Desempenho | Comprometido | Cada requisição atravessa todas as camadas, somando latência |
-| Testabilidade | Favorecida | Camadas podem ser substituídas por dublês em teste |
-| Simplicidade operacional | Comprometida | Mais partes para implantar e monitorar |
+Alguns custos merecem mais explicação, porque não aparecem enquanto o sistema é pequeno.
+
+**Consistência eventual.** Entre a resposta ao cliente e o processamento dos assinantes há uma janela em que os dados discordam: o pedido está confirmado e os pontos ainda não. Os dados chegam ao estado certo, só não imediatamente. Para os pontos, isso é aceitável. Para o estoque, não seria, e foi por isso que ele ficou fora do broker.
+
+**Falhas silenciosas.** Na versão acoplada, o e-mail fora do ar derrubou a venda: ruim, mas visível. Com eventos, a venda segue e o problema vai para a dead letter. Isso é bom para o cliente, mas, se ninguém monitorar essa fila, o e-mail simplesmente nunca chega. Richards e Ford dedicam seções inteiras do capítulo sobre o estilo ao tratamento de erros e à prevenção de perda de mensagens, justamente porque o publicador já seguiu adiante quando o erro acontece [@richards2020fundamentals, cap. 14].
+
+**Fluxo implícito.** Para saber o que acontece numa venda, já não basta ler `finalizar_pedido`. A sequência completa não está escrita em nenhum trecho de código e, muitas vezes, só pode ser reconstruída observando o sistema em execução [@fowler2017event]. Por isso registrar o que foi entregue a quem, como o `log` do broker do notebook, deixa de ser opcional.
+
+**Eventos viram contrato.** Depois que vários assinantes dependem do formato de `PedidoCriado`, mudar esse formato exige coordenação entre equipes. O problema é mais agudo quando os eventos ficam guardados por muito tempo, como em sistemas com *event sourcing*. Overeem e coautores entrevistaram 25 engenheiros sobre 19 sistemas desse tipo, e a evolução dos eventos apareceu entre os principais desafios relatados; as táticas encontradas incluem versionar os eventos e convertê-los para o formato novo no momento da leitura (*upcasting*) [@overeem2021empirical].
+
+**Mais uma peça para operar.** O broker precisa estar no ar, ter espaço para as filas e ser monitorado. Num sistema pequeno, esse custo pode ser maior do que o benefício.
 
 ## Quando usar e quando não usar
 
-Feche com critérios de decisão acionáveis, na forma de condições verificáveis, não
-de recomendações vagas.
+{{< include _quando-usar.md >}}
 
-**Considere usar quando:**
-
-- A condição concreta que torna esse estilo adequado
-- Outra condição
-
-**Evite quando:**
-
-- A condição em que o custo supera o benefício
-- Outra condição
-
-**Sinais de que a escolha foi errada:**
-
-- Sintoma observável que indica desalinhamento entre estilo e problema
+Um teste rápido para os casos de dúvida: escreva o nome do evento. Se sair naturalmente no passado e fizer sentido para mais de um interessado, provavelmente é um evento. Se sair como ordem, ou se só um componente vai ouvir e quem publica precisa da resposta, é uma chamada direta com outro nome.
 
 ::: {.callout-note}
 ## Slides deste tópico
-A apresentação está em [`slides.qmd`](slides.qmd) — 16 slides para uma fala de
-20 minutos, com os mesmos exemplos e trade-offs deste texto.
+A apresentação está em [`slides.qmd`](slides.qmd), com o mesmo exemplo, as mesmas medições e a mesma tabela de trade-offs deste texto.
 :::
 
 ## Referências
-
-As referências abaixo são geradas automaticamente a partir de `referencias.bib`.
-Não escreva esta lista à mão.
 
 ::: {#refs}
 :::
@@ -162,9 +208,5 @@ Não escreva esta lista à mão.
 ::: {.como-citar}
 **Como citar este tópico**
 
-Nome Completo do Autor; Nome Completo da Segunda Autora. "Tópico modelo".
-*Guia Aberto de Arquitetura de Software*, 2026. Disponível em:
-<https://ifpe-belojardim-es.github.io/guia-arquitetura-de-software/content/00-modelo/>. Licenciado sob CC BY-NC 4.0.
-
-Vários autores: separe por ponto e vírgula, na mesma ordem do `metadata.yaml`.
+Antonio Mário Jesus Vidal Leite; David Soares da Silva; Ian Képler dos Santos Araújo; João Gabriel Marcos da Silva; João Lucas da Silva Soares Oliveira; Lucas Matheus Elias Silva Teixeira dos Santos. "Publish-Subscribe e Arquitetura Baseada em Eventos". *Guia Aberto de Arquitetura de Software*, 2026. Disponível em: <https://ifpe-belojardim-es.github.io/guia-arquitetura-de-software/content/07-publish-subscribe-e-eventos/>. Licenciado sob CC BY-NC 4.0.
 :::
