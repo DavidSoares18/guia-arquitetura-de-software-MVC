@@ -39,6 +39,8 @@ website:
             text: "04 — Arquitetura Cliente-Servidor"
           - href: content/05-microsservicos/index.qmd
             text: "05 — Microsserviços"
+          - href: content/07-publish-subscribe-e-eventos/index.qmd
+            text: "07 — Publish-Subscribe e Arquitetura Baseada em Eventos"
     right:
       - icon: github
         href: "https://github.com/IFPE-BeloJardim-ES/guia-arquitetura-de-software"
