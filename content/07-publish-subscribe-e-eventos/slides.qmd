@@ -1,10 +1,14 @@
 ---
-title: "Tópico modelo"
-subtitle: "Estrutura e profundidade esperadas de uma contribuição"
+title: "Publish-Subscribe e Arquitetura Baseada em Eventos"
+subtitle: "Componentes que reagem a fatos sem precisar saber quem os anunciou"
 author:
-  - "Nome Completo do Autor"
-  - "Nome Completo da Segunda Autora"
-date: 2026-08-30
+  - "Antonio Mário Jesus Vidal Leite"
+  - "David Soares da Silva"
+  - "Ian Képler dos Santos Araújo"
+  - "João Gabriel Marcos da Silva"
+  - "João Lucas da Silva Soares Oliveira"
+  - "Lucas Matheus Elias Silva Teixeira dos Santos"
+date: 2026-11-17
 bibliography: referencias.bib
 format:
   revealjs:
@@ -18,144 +22,181 @@ format:
     footer: "Guia Aberto de Arquitetura de Software · CC BY-NC 4.0"
 ---
 
-## Como usar este modelo {.smaller}
+## O problema: finalizar uma compra
 
-Estes slides são o **apoio de fala** do tópico, não o texto projetado. Substitua
-tudo, mantendo três regras:
+Ao clicar em "finalizar", a loja precisa:
 
-- Um slide, uma ideia. Se precisa de dois parágrafos, é fala, não slide
-- Entre 12 e 20 slides, para uma apresentação de 20 minutos
-- O que for prosa compartilhada com o `index.qmd` entra por
-  `{{{< include _arquivo.md >}}}`, nunca por copiar e colar
+- baixar o estoque
+- enviar o e-mail de confirmação
+- creditar pontos de fidelidade
+- atualizar a tela "Meus pedidos"
 
-::: {.notes}
-Notas do apresentador ficam aqui e não aparecem na projeção. Use-as para o que
-você vai falar, liberando o slide do texto corrido.
-:::
-
-## Roteiro
-
-1. O problema que veio antes da solução
-2. Definição e origem
-3. Estrutura e restrições
-4. Exemplo aplicado e a violação
-5. Trade-offs
-6. Critérios de decisão
-
-## O problema veio antes
-
-Todo estilo arquitetural nasce de uma dificuldade concreta:
-
-- Acoplamento que trava a evolução
-- Impossibilidade de mudar partes de forma independente
-- Custo de coordenação entre equipes
+Com chamadas diretas, a venda **conhece** os quatro serviços, **espera** os quatro e **cai** se qualquer um cair.
 
 ::: {.notes}
-Abrir pelo problema, não pela solução. Quem começa pela solução ensina a decorar.
+Abrir pelo problema. Perguntar à turma: o que acontece com a venda se o servidor de e-mail cair?
 :::
 
 ## Definição
 
-> Enuncie o conceito em uma ou duas frases, com precisão, antes de qualquer
-> digressão histórica.
+**Publish-subscribe**: um componente publica um evento; quem assinou aquele tipo de evento é avisado. Quem publica não sabe quem recebe [@eugster2003many].
 
-Se a plateia não souber em dez segundos do que se trata, o slide falhou.
+**Arquitetura baseada em eventos**: o sistema inteiro organizado em componentes que reagem a eventos, em geral de forma assíncrona [@richards2020fundamentals, cap. 14].
 
-## De onde vem a ideia
+Pub/sub é o mecanismo; a arquitetura é a decisão de estruturar o sistema em torno dele.
 
-O critério de decomposição modular de Parnas [@parnas1972modularization]:
+## Evento é fato, não ordem
 
-- Dividir por **informação escondida**, não por etapa de processamento
-- Módulo é unidade de **decisão de projeto**, não de fluxo de execução
+| Evento (fato) | Comando (ordem) |
+|---|---|
+| `PedidoCriado` | `EnviarEmail` |
+| `PagamentoAprovado` | `CreditarPontos` |
+| no passado, para quem se interessar | no imperativo, para alguém específico |
 
-Cite a fonte original, nunca o post que a resume.
+Usar evento como comando disfarçado traz o acoplamento de volta [@fowler2017event].
 
-## Estrutura
+## De onde veio a ideia
+
+- **1990, Field**: o depurador anuncia que parou; o editor rola até a linha sem ser chamado [@reiss1990connecting]
+- **1993, invocação implícita**: Garlan e Shaw catalogam o estilo [@garlan1993introduction, seç. 3.3]
+- **1993, Information Bus**: pub/sub distribuído, por assunto e anônimo, em mesas de operação financeira [@oki1993information]
+- **Hoje**: RabbitMQ, Apache Kafka e serviços de nuvem [@dobbelaere2017kafka]
+
+## As quatro peças
 
 ```{mermaid}
-flowchart TD
-    A[Componente de interface] --> B[Componente de aplicação]
-    B --> C[Componente de domínio]
-    C --> D[(Armazenamento)]
+flowchart LR
+    L["Loja<br/>(publicador)"] -- "PedidoCriado" --> B(["Broker"])
+    B --> F1[["fila: notificação"]] --> N["Notificação"]
+    B --> F2[["fila: fidelidade"]] --> P["Fidelidade"]
+    B --> F3[["fila: painel"]] --> M["Painel"]
+    B -.-> D[("dead letter")]
 ```
 
-Pelo menos um diagrama seu — não uma imagem tirada de livro.
+Nenhuma seta sai da loja em direção aos assinantes.
 
-## O que o estilo proíbe
+## Três desacoplamentos
 
-Um estilo se define tanto pelas conexões que autoriza quanto pelas que
-veda [@bass2021software, cap. 1].
+Segundo Eugster e coautores [@eugster2003many]:
 
-- Interface não fala com armazenamento
-- Domínio não conhece a interface
-- A degradação começa quando essas restrições são negociadas "só desta vez"
+- **Espaço**: a loja não guarda referência à fidelidade
+- **Tempo**: a fidelidade pode estar fora do ar; os eventos esperam na fila
+- **Sincronização**: a loja publica e responde, sem esperar
 
-## Exemplo aplicado
+## Pub/sub não é Observer
 
-O mesmo caso do texto e do notebook. Três coisas a mostrar:
+| | Observer | Publish-subscribe |
+|---|---|---|
+| Quem guarda a lista de interessados | o objeto observado | o broker |
+| Os dois lados se conhecem | sim | não |
+| Precisam estar ativos juntos | sim | não |
 
-1. A implementação correta
-2. A violação da restrição
-3. A consequência mensurável
+O Observer foi visto no tópico de MVC [@gamma1994design, cap. 5; @eugster2003many].
 
-## A violação
+## Variações do estilo
+
+**Como assinar**
+
+- por **tópico**: tudo de `PedidoCriado`
+- por **conteúdo**: só pedidos acima de R$ 500; mais expressivo, mais caro para rotear [@carzaniga2001design]
+
+**Topologia** [@richards2020fundamentals, cap. 14]
+
+- **broker**: sem coordenador; o fluxo emerge das reações (nosso exemplo)
+- **mediador**: um componente central dispara os passos em ordem
+
+## O que o estilo exige
+
+1. O publicador **não depende** dos assinantes
+2. O evento **carrega os dados** de que os assinantes precisam [@fowler2017event]
+3. O assinante **não assume** entrega única nem ordem
+
+A terceira é a mais fácil de esquecer: o exemplo mostra o que acontece.
+
+## Por que a terceira regra existe
+
+- No máximo uma vez: pode **perder**
+- Pelo menos uma vez: pode **repetir**
+- Exatamente uma vez: exige coordenação extra e **custa caro**
+
+[@kleppmann2017designing, cap. 11; @dobbelaere2017kafka]
+
+Ordem: o Kafka só garante dentro de uma partição; o RabbitMQ, dentro de um canal [@dobbelaere2017kafka].
+
+## Exemplo: as duas lojas {.smaller}
 
 ```python
-# atalho: a interface conversa direto com o banco
-def listar_pedidos(cliente_id):
-    return db.query("SELECT * FROM pedidos WHERE cliente = ?", cliente_id)
+# chamadas diretas
+def finalizar_pedido(self, pedido):
+    self.estoque.baixar(pedido["produto"], pedido["quantidade"])
+    self.notificacao.enviar(pedido["cliente"], f"Pedido {pedido['id']} confirmado")
+    self.fidelidade.creditar(pedido["cliente"], pedido["valor"])
+    self.painel.registrar(pedido["id"], "confirmado")
+    return "confirmado"
+
+# com eventos
+def finalizar_pedido(self, pedido):
+    self.estoque.baixar(pedido["produto"], pedido["quantidade"])
+    self.broker.publicar(Evento("PedidoCriado", dict(pedido)))
+    return "confirmado"
 ```
 
-Funciona hoje. O problema aparece na segunda regra de negócio que precisar do
-mesmo dado.
+## Nem tudo vira evento
 
-## A consequência mensurável
+O estoque **continuou** como chamada direta.
 
-Sem número, é opinião. Meça em alguma dimensão:
+> Se a resposta ao cliente depende do resultado, é chamada direta. Se é reação ao que já aconteceu, é evento.
 
-- Acoplamento aferente/eferente
-- Tempo de build
-- Quantidade de dublês necessários para testar
-- Latência por requisição
+Com o estoque como assinante, dois clientes poderiam receber "confirmado" pela última caneca.
 
-## Trade-offs
+## O que o notebook mediu {.smaller}
 
-Nenhum estilo é melhor que outro em abstrato: cada um favorece atributos de
-qualidade ao custo de outros [@richards2020fundamentals].
+| Medição | Chamadas diretas | Eventos |
+|---|---|---|
+| Serviços que a loja conhece | 4 | 2 |
+| Depois da nota fiscal | 5 (loja editada) | 2 (loja intacta) |
+| Tempo de resposta | cerca de 0,43 s | cerca de 0,01 s |
+| E-mail fora do ar | venda recusada, caneca já fora do estoque | venda concluída, e-mail na dead letter |
+| Fidelidade em manutenção (3 vendas) | 3 recusadas, mas 3 canecas fora do estoque e 3 e-mails de "confirmado" | 3 concluídas, 150 pontos quando voltou |
 
-## Trade-offs em uma tabela {.smaller}
+## Violação 1: entrega duplicada
+
+A fidelidade credita, mas a confirmação ao broker se perde. O broker entrega de novo.
+
+- Sem proteção: pedido de R$ 50 → **100 pontos**
+- Com *Idempotent Receiver* (guardar os `id` já tratados) → **50 pontos** [@hohpe2003enterprise, cap. 10]
+
+O broker continuou entregando duas vezes. Quem resolveu foi o assinante.
+
+## Violação 2: ordem trocada
+
+`PedidoCriado` falha na primeira tentativa e volta para o fim da fila, atrás de `PedidoCancelado`.
+
+- Sem proteção: o painel mostra **"confirmado"** para um pedido cancelado
+- Com versão no evento: o painel ignora o que é mais antigo do que já aplicou → **"cancelado"**
+
+Nenhum dos dois defeitos existia na versão acoplada.
+
+## Trade-offs {.smaller}
 
 {{< include _trade-offs.md >}}
 
 ::: {.notes}
-Esta tabela vem do mesmo `_trade-offs.md` incluído no index.qmd — editar em um
-lugar atualiza texto e slides.
+Esta tabela vem do mesmo arquivo incluído no texto. Lembrar que Garlan e Shaw já apontavam os dois lados em 1993: evolução de um lado, perda de controle do outro.
 :::
 
-## Seja específico quanto à dimensão
+## Custos que aparecem depois
 
-"É mais escalável" não diz nada.
+- **Consistência eventual**: pedido confirmado, pontos ainda não
+- **Falha silenciosa**: dead letter que ninguém olha = e-mail que nunca chega
+- **Fluxo implícito**: a sequência de uma venda não está em nenhum trecho de código [@fowler2017event]
+- **Eventos viram contrato**: 25 engenheiros, 19 sistemas com event sourcing; evoluir os eventos foi um dos principais desafios [@overeem2021empirical]
 
-- Escalável em requisições simultâneas?
-- Em desenvolvedores trabalhando em paralelo?
-- Em volume de dados?
+## Quando usar e quando evitar {.smaller .scrollable}
 
-## Quando usar
+{{< include _quando-usar.md >}}
 
-- A condição concreta que torna o estilo adequado
-- Outra condição verificável
-
-Critérios acionáveis, não recomendações vagas.
-
-## Quando evitar
-
-- A condição em que o custo supera o benefício
-- Outra condição
-
-**Sinais de que a escolha foi errada:** o sintoma observável que indica
-desalinhamento entre estilo e problema.
-
-## Referências {.smaller}
+## Referências {.smaller .scrollable}
 
 ::: {#refs}
 :::
