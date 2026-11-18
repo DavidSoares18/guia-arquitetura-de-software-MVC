@@ -22,76 +22,77 @@ format:
     footer: "Guia Aberto de Arquitetura de Software · CC BY-NC 4.0"
 ---
 
-## O problema: finalizar uma compra
+## Publish-Subscribe e Arquitetura Baseada em Eventos {.arte background-image="assets/slide-01-capa.jpg" background-size="contain" background-color="#0f3c78" aria-label="Capa: Publish-Subscribe e Arquitetura Baseada em Eventos. A loja publica PedidoCriado no broker, que entrega cópias para notificação, fidelidade e painel."}
 
-Ao clicar em "finalizar", a loja precisa:
-
-- baixar o estoque
-- enviar o e-mail de confirmação
-- creditar pontos de fidelidade
-- atualizar a tela "Meus pedidos"
-
-Com chamadas diretas, a venda **conhece** os quatro serviços, **espera** os quatro e **cai** se qualquer um cair.
-
-::: {.notes}
-Abrir pelo problema. Perguntar à turma: o que acontece com a venda se o servidor de e-mail cair?
-:::
-
-## Definição
-
-**Publish-subscribe**: um componente publica um evento; quem assinou aquele tipo de evento é avisado. Quem publica não sabe quem recebe [@eugster2003many].
-
-**Arquitetura baseada em eventos**: o sistema inteiro organizado em componentes que reagem a eventos, em geral de forma assíncrona [@richards2020fundamentals, cap. 14].
-
-Pub/sub é o mecanismo; a arquitetura é a decisão de estruturar o sistema em torno dele.
-
-## Evento é fato, não ordem
-
-| Evento (fato) | Comando (ordem) |
-|---|---|
-| `PedidoCriado` | `EnviarEmail` |
-| `PagamentoAprovado` | `CreditarPontos` |
-| no passado, para quem se interessar | no imperativo, para alguém específico |
-
-Usar evento como comando disfarçado traz o acoplamento de volta [@fowler2017event].
-
-## De onde veio a ideia
-
-- **1990, Field**: o depurador anuncia que parou; o editor rola até a linha sem ser chamado [@reiss1990connecting]
-- **1993, invocação implícita**: Garlan e Shaw catalogam o estilo [@garlan1993introduction, seç. 3.3]
-- **1993, Information Bus**: pub/sub distribuído, por assunto e anônimo, em mesas de operação financeira [@oki1993information]
-- **Hoje**: RabbitMQ, Apache Kafka e serviços de nuvem [@dobbelaere2017kafka]
-
-## As quatro peças
-
-```{mermaid}
-flowchart LR
-    L["Loja<br/>(publicador)"] -- "PedidoCriado" --> B(["Broker"])
-    B --> F1[["fila: notificação"]] --> N["Notificação"]
-    B --> F2[["fila: fidelidade"]] --> P["Fidelidade"]
-    B --> F3[["fila: painel"]] --> M["Painel"]
-    B -.-> D[("dead letter")]
+```{=html}
+<style>
+/* Nos slides com imagem, o título fica no HTML (leitores de tela e navegação),
+   mas não aparece na projeção, porque a própria imagem já traz o título. */
+.reveal section.arte h2 {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+</style>
 ```
 
-Nenhuma seta sai da loja em direção aos assinantes.
+::: {.notes}
+Abrir dizendo o roteiro: o problema das chamadas diretas, as peças do estilo, o exemplo da loja com as medições do notebook e os defeitos que o assincronismo traz.
+:::
 
-## Três desacoplamentos
+## O problema: finalizar uma compra {.arte background-image="assets/slide-02-problema.jpg" background-size="contain" background-color="#0f3c78" aria-label="A loja chama estoque (0,01 s), e-mail (0,30 s), fidelidade (0,10 s) e painel (0,02 s) em sequência. O cliente espera cerca de 0,43 s, a venda falha se o e-mail cair e a nota fiscal exige editar a loja."}
 
-Segundo Eugster e coautores [@eugster2003many]:
+::: {.notes}
+Abrir pelo problema. A loja conhece os quatro serviços, espera os quatro e cai se qualquer um cair. Os tempos são os simulados no notebook.
 
-- **Espaço**: a loja não guarda referência à fidelidade
-- **Tempo**: a fidelidade pode estar fora do ar; os eventos esperam na fila
-- **Sincronização**: a loja publica e responde, sem esperar
+Perguntar à turma: o que acontece com a venda se o servidor de e-mail cair?
+:::
 
-## Pub/sub não é Observer
+## Mecanismo e estilo {.arte background-image="assets/slide-03-definicao.jpg" background-size="contain" background-color="#0f3c78" aria-label="Publish-subscribe é o mecanismo de comunicação: um componente publica, quem assinou é avisado, e quem publica não sabe quem recebe. Arquitetura baseada em eventos é a decisão de organizar o sistema inteiro em componentes que reagem a eventos."}
 
-| | Observer | Publish-subscribe |
-|---|---|---|
-| Quem guarda a lista de interessados | o objeto observado | o broker |
-| Os dois lados se conhecem | sim | não |
-| Precisam estar ativos juntos | sim | não |
+::: {.notes}
+Publish-subscribe: quem publica não sabe quem recebe, nem quantos são [@eugster2003many].
 
-O Observer foi visto no tópico de MVC [@gamma1994design, cap. 5; @eugster2003many].
+Arquitetura baseada em eventos: componentes desacoplados que reagem a eventos, em geral de forma assíncrona, e podem publicar novos eventos [@richards2020fundamentals, cap. 14].
+
+Pub/sub é o mecanismo; a arquitetura é a decisão de estruturar o sistema em torno dele.
+:::
+
+## Evento é fato, não ordem {.arte background-image="assets/slide-04-fato-ou-ordem.jpg" background-size="contain" background-color="#0f3c78" aria-label="Eventos como PedidoCriado e PagamentoAprovado estão no passado e servem a quem se interessar. Comandos como EnviarEmail e CreditarPontos são ordens para alguém específico."}
+
+::: {.notes}
+Hohpe e Woolf tratam evento e comando como tipos diferentes de mensagem [@hohpe2003enterprise, cap. 5]. Usar evento como comando disfarçado traz o acoplamento de volta [@fowler2017event].
+:::
+
+## De onde veio a ideia {.arte background-image="assets/slide-05-origem.jpg" background-size="contain" background-color="#0f3c78" aria-label="Linha do tempo: 1990, Field; 1993, invocação implícita catalogada por Garlan e Shaw; 1993, Information Bus, pub/sub distribuído por assunto e anônimo; hoje, RabbitMQ e Kafka."}
+
+::: {.notes}
+- 1990, Field: o depurador anuncia que parou e o editor rola até a linha sem ser chamado [@reiss1990connecting].
+- 1993, invocação implícita: Garlan e Shaw catalogam o estilo [@garlan1993introduction, seç. 3.3].
+- 1993, Information Bus: pub/sub distribuído, por assunto e anônimo, usado em fábricas de semicondutores e mesas de operação financeira [@oki1993information].
+- Hoje: RabbitMQ e Apache Kafka [@dobbelaere2017kafka].
+:::
+
+## As quatro peças {.arte background-image="assets/slide-06-quatro-pecas.jpg" background-size="contain" background-color="#0f3c78" aria-label="A loja (publicador) envia o evento PedidoCriado ao broker (canal), que coloca uma cópia na fila de cada assinante: notificação, fidelidade e painel. Mensagens que falharam várias vezes vão para a dead letter. Nenhuma seta sai da loja em direção aos assinantes."}
+
+::: {.notes}
+Evento, publicador, broker e assinante. O canal que entrega uma cópia a cada assinante é o *Publish-Subscribe Channel* de Hohpe e Woolf [@hohpe2003enterprise, cap. 4].
+
+Chamar atenção: nenhuma seta sai da loja em direção aos assinantes.
+:::
+
+## Três formas de desacoplamento {.arte background-image="assets/slide-07-desacoplamentos.jpg" background-size="contain" background-color="#0f3c78" aria-label="Espaço: ninguém guarda referência a ninguém. Tempo: não precisam estar no ar juntos. Sincronização: o publicador não fica esperando."}
+
+::: {.notes}
+As três dimensões vêm de Eugster e coautores [@eugster2003many]. Usar o exemplo da loja em cada uma.
+:::
+
+## Pub/sub não é Observer {.arte background-image="assets/slide-08-observer.jpg" background-size="contain" background-color="#0f3c78" aria-label="No Observer, o observado guarda a lista e chama os observadores: eles se conhecem e precisam estar ativos juntos. No publish-subscribe, o broker guarda a lista: loja e assinantes não se conhecem e não precisam estar ativos juntos."}
+
+::: {.notes}
+O Observer foi visto no tópico de MVC [@gamma1994design, cap. 5]. Mesmo notificando de forma assíncrona, continua acoplado no espaço e no tempo [@eugster2003many].
+:::
 
 ## Variações do estilo
 
@@ -141,13 +142,13 @@ def finalizar_pedido(self, pedido):
     return "confirmado"
 ```
 
-## Nem tudo vira evento
+## Nem tudo vira evento {.arte background-image="assets/slide-09-nem-tudo-vira-evento.jpg" background-size="contain" background-color="#0f3c78" aria-label="A loja chama o estoque diretamente, porque espera a resposta, e publica PedidoCriado no broker para notificação, fidelidade e painel. Se a resposta ao cliente depende do resultado, é chamada direta; se é reação ao que já aconteceu, é evento."}
 
-O estoque **continuou** como chamada direta.
+::: {.notes}
+O estoque continuou como chamada direta. Com o estoque como assinante, dois clientes poderiam receber "confirmado" pela última caneca.
 
-> Se a resposta ao cliente depende do resultado, é chamada direta. Se é reação ao que já aconteceu, é evento.
-
-Com o estoque como assinante, dois clientes poderiam receber "confirmado" pela última caneca.
+Richards e Ford discutem essa mesma escolha entre requisição e evento [@richards2020fundamentals, cap. 14].
+:::
 
 ## O que o notebook mediu {.smaller}
 
@@ -159,23 +160,17 @@ Com o estoque como assinante, dois clientes poderiam receber "confirmado" pela �
 | E-mail fora do ar | venda recusada, caneca já fora do estoque | venda concluída, e-mail na dead letter |
 | Fidelidade em manutenção (3 vendas) | 3 recusadas, mas 3 canecas fora do estoque e 3 e-mails de "confirmado" | 3 concluídas, 150 pontos quando voltou |
 
-## Violação 1: entrega duplicada
+## Violação 1: entrega duplicada {.arte background-image="assets/slide-10-entrega-duplicada.jpg" background-size="contain" background-color="#0f3c78" aria-label="Sem proteção: a fidelidade credita 50 pontos, a confirmação ao broker se perde, o broker entrega de novo e o pedido de R$ 50 gera 100 pontos. Com receptor idempotente, o id já visto é ignorado e o pedido gera 50 pontos."}
 
-A fidelidade credita, mas a confirmação ao broker se perde. O broker entrega de novo.
+::: {.notes}
+A correção é o *Idempotent Receiver* [@hohpe2003enterprise, cap. 10]: o assinante guarda os ids já tratados. O broker entregou duas vezes nos dois casos; quem resolveu foi o assinante. Números do notebook, seção 5.1.
+:::
 
-- Sem proteção: pedido de R$ 50 → **100 pontos**
-- Com *Idempotent Receiver* (guardar os `id` já tratados) → **50 pontos** [@hohpe2003enterprise, cap. 10]
+## Violação 2: ordem trocada {.arte background-image="assets/slide-11-ordem-trocada.jpg" background-size="contain" background-color="#0f3c78" aria-label="PedidoCriado versão 1 falha e volta para o fim da fila, atrás de PedidoCancelado versão 2. Sem proteção, a tela mostra confirmado para um pedido cancelado. Com versão no evento, o painel ignora a versão 1 e mostra cancelado."}
 
-O broker continuou entregando duas vezes. Quem resolveu foi o assinante.
-
-## Violação 2: ordem trocada
-
-`PedidoCriado` falha na primeira tentativa e volta para o fim da fila, atrás de `PedidoCancelado`.
-
-- Sem proteção: o painel mostra **"confirmado"** para um pedido cancelado
-- Com versão no evento: o painel ignora o que é mais antigo do que já aplicou → **"cancelado"**
-
-Nenhum dos dois defeitos existia na versão acoplada.
+::: {.notes}
+Nenhum dos dois defeitos existia na versão acoplada. A ordem de chegada continuou trocada; o painel só deixou de depender dela. Números do notebook, seção 5.2.
+:::
 
 ## Trade-offs {.smaller}
 

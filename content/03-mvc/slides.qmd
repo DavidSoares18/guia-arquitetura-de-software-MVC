@@ -1,14 +1,14 @@
 ---
-title: "Publish-Subscribe e Arquitetura Baseada em Eventos"
-subtitle: "Componentes que reagem a fatos sem precisar saber quem os anunciou"
+title: "MVC (Model-View-Controller)"
+subtitle: "Decodificando padrões de arquitetura: MVC, MVP e MVVM"
 author:
-  - "Antonio Mário Jesus Vidal Leite"
-  - "David Soares da Silva"
-  - "Ian Képler dos Santos Araújo"
-  - "João Gabriel Marcos da Silva"
-  - "João Lucas da Silva Soares Oliveira"
-  - "Lucas Matheus Elias Silva Teixeira dos Santos"
-date: 2026-11-17
+  - "João Gabriel"
+  - "David Soares"
+  - "João Lucas"
+  - "Ian Kepler"
+  - "Lucas Matheus"
+  - "Antonio Mario"
+date: 2026-09-22
 bibliography: referencias.bib
 format:
   revealjs:
@@ -22,12 +22,12 @@ format:
     footer: "Guia Aberto de Arquitetura de Software · CC BY-NC 4.0"
 ---
 
-## Publish-Subscribe e Arquitetura Baseada em Eventos {.arte background-image="assets/slide-01-capa.jpg" background-size="contain" background-color="#0f3c78" aria-label="Capa: Publish-Subscribe e Arquitetura Baseada em Eventos. A loja publica PedidoCriado no broker, que entrega cópias para notificação, fidelidade e painel."}
+## Decodificando padrões de arquitetura {.arte background-image="assets/slide-01-capa.jpg" background-size="contain" background-color="#f2f0eb" aria-label="Capa: Decodificando Padrões de Arquitetura. Uma jornada visual pelo MVC, MVP e MVVM."}
 
 ```{=html}
 <style>
-/* Nos slides com imagem, o título fica no HTML (leitores de tela e navegação),
-   mas não aparece na projeção, porque a própria imagem já traz o título. */
+/* Os títulos abaixo ficam no HTML (para leitores de tela e para a navegação),
+   mas não aparecem na projeção, porque a própria imagem já traz o título. */
 .reveal section.arte h2 {
   position: absolute;
   width: 1px; height: 1px;
@@ -38,138 +38,98 @@ format:
 ```
 
 ::: {.notes}
-Abrir dizendo o roteiro: o problema das chamadas diretas, as peças do estilo, o exemplo da loja com as medições do notebook e os defeitos que o assincronismo traz.
+Apresentação: João Gabriel.
+
+Abrir dizendo o que a gente vai fazer em 20 minutos: partir do problema que existia antes do MVC, ver as três partes, mostrar o que acontece quando a separação é quebrada e terminar comparando com MVP e MVVM.
 :::
 
-## O problema: finalizar uma compra {.arte background-image="assets/slide-02-problema.jpg" background-size="contain" background-color="#0f3c78" aria-label="A loja chama estoque (0,01 s), e-mail (0,30 s), fidelidade (0,10 s) e painel (0,02 s) em sequência. O cliente espera cerca de 0,43 s, a venda falha se o e-mail cair e a nota fiscal exige editar a loja."}
+## O problema antes do MVC {.arte background-image="assets/slide-02-abismo-interface.jpg" background-size="contain" background-color="#0f3c78" aria-label="O abismo entre a mente do usuário, fluida, e os dados brutos, rígidos. No meio, código espaguete e sistemas frágeis."}
 
 ::: {.notes}
-Abrir pelo problema. A loja conhece os quatro serviços, espera os quatro e cai se qualquer um cair. Os tempos são os simulados no notebook.
+De um lado o jeito como a pessoa pensa, do outro os dados guardados em tabela. Quando a interface e a regra de negócio ficam misturadas, esse meio de campo vira código espaguete: mudar uma tela quebra uma regra.
 
-Perguntar à turma: o que acontece com a venda se o servidor de e-mail cair?
+Perguntar para a turma: quem já fez um trabalho em que o cálculo estava dentro do botão?
 :::
 
-## Mecanismo e estilo {.arte background-image="assets/slide-03-definicao.jpg" background-size="contain" background-color="#0f3c78" aria-label="Publish-subscribe é o mecanismo de comunicação: um componente publica, quem assinou é avisado, e quem publica não sabe quem recebe. Arquitetura baseada em eventos é a decisão de organizar o sistema inteiro em componentes que reagem a eventos."}
+## De onde veio a ideia: Xerox PARC {.arte background-image="assets/slide-03-xerox-parc.jpg" background-size="contain" background-color="#0f3c78" aria-label="Trygve Reenskaug criou o MVC no Xerox PARC para a linguagem Smalltalk, dando origem à separação de responsabilidades."}
 
 ::: {.notes}
-Publish-subscribe: quem publica não sabe quem recebe, nem quantos são [@eugster2003many].
+Apresentação: David Soares.
 
-Arquitetura baseada em eventos: componentes desacoplados que reagem a eventos, em geral de forma assíncrona, e podem publicar novos eventos [@richards2020fundamentals, cap. 14].
+Trygve Reenskaug trabalhou nisso no Xerox PARC entre 1978 e 1979, e a nota técnica que descreve o MVC é de dezembro de 1979 [@reenskaug1979mvc]. O objetivo não era só organizar código: era deixar o usuário ver e manipular os mesmos dados de várias formas.
 
-Pub/sub é o mecanismo; a arquitetura é a decisão de estruturar o sistema em torno dele.
+Quem documentou o uso na prática foram Krasner e Pope, em 1988 [@krasner1988cookbook]. E a ideia de fundo é mais velha ainda: separar responsabilidades [@dijkstra1982role] e esconder atrás de um módulo aquilo que mais muda [@parnas1972modularization].
 :::
 
-## Evento é fato, não ordem {.arte background-image="assets/slide-04-fato-ou-ordem.jpg" background-size="contain" background-color="#0f3c78" aria-label="Eventos como PedidoCriado e PagamentoAprovado estão no passado e servem a quem se interessar. Comandos como EnviarEmail e CreditarPontos são ordens para alguém específico."}
+## As três partes {.arte background-image="assets/slide-04-tres-partes.jpg" background-size="contain" background-color="#0f3c78" aria-label="Modelo: dados e lógica de negócios. Visão: apresentação e interface. Controlador: o maestro das interações."}
 
 ::: {.notes}
-Hohpe e Woolf tratam evento e comando como tipos diferentes de mensagem [@hohpe2003enterprise, cap. 5]. Usar evento como comando disfarçado traz o acoplamento de volta [@fowler2017event].
+Apresentação: João Lucas.
+
+Modelo guarda dados e regra. Visão mostra. Controlador recebe a ação do usuário.
+
+O que cada um NÃO pode fazer é tão importante quanto: o Modelo não conhece tela, a Visão não decide regra, o Controlador não guarda estado de negócio.
 :::
 
-## De onde veio a ideia {.arte background-image="assets/slide-05-origem.jpg" background-size="contain" background-color="#0f3c78" aria-label="Linha do tempo: 1990, Field; 1993, invocação implícita catalogada por Garlan e Shaw; 1993, Information Bus, pub/sub distribuído por assunto e anônimo; hoje, RabbitMQ e Kafka."}
+## O fluxo clássico {.arte background-image="assets/slide-05-fluxo-classico.jpg" background-size="contain" background-color="#0f3c78" aria-label="O usuário envia uma entrada ao Controlador, que atualiza o Modelo; o Modelo avisa a Visão, que exibe a mudança."}
 
 ::: {.notes}
-- 1990, Field: o depurador anuncia que parou e o editor rola até a linha sem ser chamado [@reiss1990connecting].
-- 1993, invocação implícita: Garlan e Shaw catalogam o estilo [@garlan1993introduction, seç. 3.3].
-- 1993, Information Bus: pub/sub distribuído, por assunto e anônimo, usado em fábricas de semicondutores e mesas de operação financeira [@oki1993information].
-- Hoje: RabbitMQ e Apache Kafka [@dobbelaere2017kafka].
+O caminho: usuário age, Controlador traduz, Modelo muda e avisa, Visão se redesenha.
+
+A seta do Modelo para a Visão é o padrão Observer: o Modelo avisa sem saber quem está ouvindo. É isso que o mantém independente da tela [@gamma1994design, cap. 1].
 :::
 
-## As quatro peças {.arte background-image="assets/slide-06-quatro-pecas.jpg" background-size="contain" background-color="#0f3c78" aria-label="A loja (publicador) envia o evento PedidoCriado ao broker (canal), que coloca uma cópia na fila de cada assinante: notificação, fidelidade e painel. Mensagens que falharam várias vezes vão para a dead letter. Nenhuma seta sai da loja em direção aos assinantes."}
+## Estrutura e restrições {.smaller}
+
+| Componente | Responsabilidade | O que não pode fazer |
+|---|---|---|
+| Model | Guarda o estado e regras de negócio; notifica observadores | Conhecer telas, renderizar HTML ou chamar print |
+| View | Apresenta o estado do Model ao usuário; lê dados | Processar regras de negócio ou alterar o Model direto |
+| Controller | Recebe eventos do usuário, aciona o Model e escolhe a View | Conter regras de negócio ou formatar apresentação |
+
+Tudo pode depender do Modelo. O Modelo não depende de ninguém [@buschmann1996pattern].
 
 ::: {.notes}
-Evento, publicador, broker e assinante. O canal que entrega uma cópia a cada assinante é o *Publish-Subscribe Channel* de Hohpe e Woolf [@hohpe2003enterprise, cap. 4].
-
-Chamar atenção: nenhuma seta sai da loja em direção aos assinantes.
+Tabela sintetizando o papel de cada parte e as fronteiras estritas entre domínio, visualização e fluxo de controle.
 :::
 
-## Três formas de desacoplamento {.arte background-image="assets/slide-07-desacoplamentos.jpg" background-size="contain" background-color="#0f3c78" aria-label="Espaço: ninguém guarda referência a ninguém. Tempo: não precisam estar no ar juntos. Sincronização: o publicador não fica esperando."}
+## Quando a separação é quebrada {.arte background-image="assets/slide-06-acoplamento.jpg" background-size="contain" background-color="#0f3c78" aria-label="Acoplamento intenso entre Visão, Modelo e um Controlador gordo, com vazamento de lógica e testabilidade comprometida."}
 
 ::: {.notes}
-As três dimensões vêm de Eugster e coautores [@eugster2003many]. Usar o exemplo da loja em cada uma.
+Apresentação: Lucas Matheus.
+
+Três sintomas: lógica vazando para a tela, Controlador gordo absorvendo tudo e teste virando pesadelo.
+
+É exatamente o que o nosso notebook demonstra com o boletim da turma.
 :::
 
-## Pub/sub não é Observer {.arte background-image="assets/slide-08-observer.jpg" background-size="contain" background-color="#0f3c78" aria-label="No Observer, o observado guarda a lista e chama os observadores: eles se conhecem e precisam estar ativos juntos. No publish-subscribe, o broker guarda a lista: loja e assinantes não se conhecem e não precisam estar ativos juntos."}
+## O exemplo do boletim
+
+- **Modelo:** `Turma` (notas, média, aprovação com média ≥ 6,0)
+- **Visões:** `TabelaView` e `ResumoView`
+- **Controlador:** `BoletimController` (comando `nota Ana 7.5`)
+
+Lançou uma nota, as duas telas se atualizam sozinhas.
 
 ::: {.notes}
-O Observer foi visto no tópico de MVC [@gamma1994design, cap. 5]. Mesmo notificando de forma assíncrona, continua acoplado no espaço e no tempo [@eugster2003many].
+Se der tempo, abrir o notebook e rodar ao vivo. Se não, mostrar só o resultado do próximo slide.
 :::
 
-## Variações do estilo
-
-**Como assinar**
-
-- por **tópico**: tudo de `PedidoCriado`
-- por **conteúdo**: só pedidos acima de R$ 500; mais expressivo, mais caro para rotear [@carzaniga2001design]
-
-**Topologia** [@richards2020fundamentals, cap. 14]
-
-- **broker**: sem coordenador; o fluxo emerge das reações (nosso exemplo)
-- **mediador**: um componente central dispara os passos em ordem
-
-## O que o estilo exige
-
-1. O publicador **não depende** dos assinantes
-2. O evento **carrega os dados** de que os assinantes precisam [@fowler2017event]
-3. O assinante **não assume** entrega única nem ordem
-
-A terceira é a mais fácil de esquecer: o exemplo mostra o que acontece.
-
-## Por que a terceira regra existe
-
-- No máximo uma vez: pode **perder**
-- Pelo menos uma vez: pode **repetir**
-- Exatamente uma vez: exige coordenação extra e **custa caro**
-
-[@kleppmann2017designing, cap. 11; @dobbelaere2017kafka]
-
-Ordem: o Kafka só garante dentro de uma partição; o RabbitMQ, dentro de um canal [@dobbelaere2017kafka].
-
-## Exemplo: as duas lojas {.smaller}
+## A violação e a consequência
 
 ```python
-# chamadas diretas
-def finalizar_pedido(self, pedido):
-    self.estoque.baixar(pedido["produto"], pedido["quantidade"])
-    self.notificacao.enviar(pedido["cliente"], f"Pedido {pedido['id']} confirmado")
-    self.fidelidade.creditar(pedido["cliente"], pedido["valor"])
-    self.painel.registrar(pedido["id"], "confirmado")
-    return "confirmado"
-
-# com eventos
-def finalizar_pedido(self, pedido):
-    self.estoque.baixar(pedido["produto"], pedido["quantidade"])
-    self.broker.publicar(Evento("PedidoCriado", dict(pedido)))
-    return "confirmado"
+# cada tela com a sua própria regra
+situacao = "aprovado" if media >= 7.0 else "reprovado"   # tabela, atualizada
+aprovados = [a for a in alunos if media(a) >= 6.0]       # resumo, esquecido
 ```
 
-## Nem tudo vira evento {.arte background-image="assets/slide-09-nem-tudo-vira-evento.jpg" background-size="contain" background-color="#0f3c78" aria-label="A loja chama o estoque diretamente, porque espera a resposta, e publica PedidoCriado no broker para notificação, fidelidade e painel. Se a resposta ao cliente depende do resultado, é chamada direta; se é reação ao que já aconteceu, é evento."}
+| Tela | Diz que a aluna com média 6,5 está |
+|---|---|
+| Tabela | reprovada |
+| Resumo | aprovada |
 
 ::: {.notes}
-O estoque continuou como chamada direta. Com o estoque como assinante, dois clientes poderiam receber "confirmado" pela última caneca.
-
-Richards e Ford discutem essa mesma escolha entre requisição e evento [@richards2020fundamentals, cap. 14].
-:::
-
-## O que o notebook mediu {.smaller}
-
-| Medição | Chamadas diretas | Eventos |
-|---|---|---|
-| Serviços que a loja conhece | 4 | 2 |
-| Depois da nota fiscal | 5 (loja editada) | 2 (loja intacta) |
-| Tempo de resposta | cerca de 0,43 s | cerca de 0,01 s |
-| E-mail fora do ar | venda recusada, caneca já fora do estoque | venda concluída, e-mail na dead letter |
-| Fidelidade em manutenção (3 vendas) | 3 recusadas, mas 3 canecas fora do estoque e 3 e-mails de "confirmado" | 3 concluídas, 150 pontos quando voltou |
-
-## Violação 1: entrega duplicada {.arte background-image="assets/slide-10-entrega-duplicada.jpg" background-size="contain" background-color="#0f3c78" aria-label="Sem proteção: a fidelidade credita 50 pontos, a confirmação ao broker se perde, o broker entrega de novo e o pedido de R$ 50 gera 100 pontos. Com receptor idempotente, o id já visto é ignorado e o pedido gera 50 pontos."}
-
-::: {.notes}
-A correção é o *Idempotent Receiver* [@hohpe2003enterprise, cap. 10]: o assinante guarda os ids já tratados. O broker entregou duas vezes nos dois casos; quem resolveu foi o assinante. Números do notebook, seção 5.1.
-:::
-
-## Violação 2: ordem trocada {.arte background-image="assets/slide-11-ordem-trocada.jpg" background-size="contain" background-color="#0f3c78" aria-label="PedidoCriado versão 1 falha e volta para o fim da fila, atrás de PedidoCancelado versão 2. Sem proteção, a tela mostra confirmado para um pedido cancelado. Com versão no evento, o painel ignora a versão 1 e mostra cancelado."}
-
-::: {.notes}
-Nenhum dos dois defeitos existia na versão acoplada. A ordem de chegada continuou trocada; o painel só deixou de depender dela. Números do notebook, seção 5.2.
+O mesmo sistema dando duas respostas. E a medida: no MVC a regra está em 1 lugar; no atalho, em 1 por tela. Cada tela nova é mais um lugar para esquecer.
 :::
 
 ## Trade-offs {.smaller}
@@ -177,21 +137,70 @@ Nenhum dos dois defeitos existia na versão acoplada. A ordem de chegada continu
 {{< include _trade-offs.md >}}
 
 ::: {.notes}
-Esta tabela vem do mesmo arquivo incluído no texto. Lembrar que Garlan e Shaw já apontavam os dois lados em 1993: evolução de um lado, perda de controle do outro.
+Apresentação: Antonio Mario.
+
+Nenhum estilo é melhor em abstrato: cada um favorece uns atributos de qualidade e sacrifica outros [@richards2020fundamentals]. Separar a interface ajuda justamente porque ela é refeita muitas vezes [@bass2021software, cap. 13].
 :::
 
-## Custos que aparecem depois
+## O MVC na web {.arte background-image="assets/slide-13-mvc-na-web.jpg" background-size="contain" background-color="#0f3c78" aria-label="Requisição HTTP chega ao Controlador no servidor, que fala com o Modelo e devolve a Visão renderizada em HTML para o navegador."}
 
-- **Consistência eventual**: pedido confirmado, pontos ainda não
-- **Falha silenciosa**: dead letter que ninguém olha = e-mail que nunca chega
-- **Fluxo implícito**: a sequência de uma venda não está em nenhum trecho de código [@fowler2017event]
-- **Eventos viram contrato**: 25 engenheiros, 19 sistemas com event sourcing; evoluir os eventos foi um dos principais desafios [@overeem2021empirical]
+::: {.notes}
+Apresentação: Ian Kepler.
 
-## Quando usar e quando evitar {.smaller .scrollable}
+Na web não dá para o servidor avisar o navegador a cada mudança. O Controlador recebe a requisição, chama o Modelo e escolhe a Visão [@fowler2002patterns, cap. 14]. Django, Rails, Laravel e Spring MVC seguem essa linha [@leff2001web].
+:::
 
-{{< include _quando-usar.md >}}
+## Entra o MVP {.arte background-image="assets/slide-07-mvp.jpg" background-size="contain" background-color="#0f3c78" aria-label="No MVP o Controlador vira Presenter, a ligação direta entre Visão e Modelo é cortada e a Visão fica passiva."}
 
-## Referências {.smaller .scrollable}
+::: {.notes}
+O Presenter assume a lógica de tela e a Visão fica passiva, só renderizando o que mandam [@potel1996mvp].
+:::
+
+## O custo: muito código repetitivo {.arte background-image="assets/slide-09-interfaces-dinamicas.jpg" background-size="contain" background-color="#0f3c78" aria-label="Em interfaces ricas, o Presenter precisa comandar cada detalhe da tela e vira um gargalo de micro-gerenciamento."}
+
+::: {.notes}
+Em tela rica e cheia de eventos, o Presenter precisa mandar em cada detalhe. Daí a busca por uma sincronia automática.
+:::
+
+## MVVM e o data binding {.arte background-image="assets/slide-10-mvvm.jpg" background-size="contain" background-color="#0f3c78" aria-label="No MVVM o Presenter vira ViewModel e o data binding sincroniza automaticamente a Visão com a lógica de apresentação."}
+
+::: {.notes}
+O Presenter vira ViewModel e o binding sincroniza os dois lados sozinho. É o padrão mais usado em interface pesada.
+:::
+
+## Os três lado a lado: excluir tarefa {.smaller}
+
+| | MVC | MVP | MVVM |
+|---|---|---|---|
+| **Quem trata o clique** | Controlador | Presenter | ViewModel |
+| **Quem altera o Modelo** | Controlador deleta | Presenter deleta | ViewModel altera |
+| **Como a tela muda** | Visão recarrega a lista | Presenter manda a Visão remover a linha | Binding espelha a mudança |
+
+::: {.notes}
+Mesma ação, três caminhos. No MVC o Controlador deleta e a Visão recarrega; no MVP o Presenter manda a Visão remover a linha; no MVVM o binding espelha a mudança.
+:::
+
+## Mapa de decisão {.arte background-image="assets/slide-12-mapa-decisao.jpg" background-size="contain" background-color="#0f3c78" aria-label="Tabela comparando MVC, MVP e MVVM em acoplamento visão-modelo, suporte a testes, conexão primária e cenário ideal."}
+
+::: {.notes}
+Cuidado ao ler esta tabela: ela compara os padrões no formato clássico. No MVC web, por exemplo, o acoplamento direto entre Visão e Modelo praticamente some.
+:::
+
+## Quando usar e quando evitar
+
+**Use quando:** há mais de uma forma de ver os mesmos dados · a interface muda mais que a regra · vocês querem testar regra sem abrir tela · o framework já é MVC
+
+**Evite quando:** o programa é pequeno e tem uma tela só · não existe interface com usuário · a tela precisa atualizar muito rápido (jogos)
+
+**Sinal de alerta:** a mesma regra em duas telas, ou Controlador com centenas de linhas.
+
+## A forma segue a função {.arte background-image="assets/slide-15-forma-funcao.jpg" background-size="contain" background-color="#0f3c78" aria-label="Peças encaixando: arquitetura não é decorar acrônimos, é alinhar o software às necessidades do usuário."}
+
+::: {.notes}
+Fechar: não é decorar sigla. É escolher o padrão que protege a ligação entre o que o usuário precisa e o que o sistema faz. Abrir para perguntas.
+:::
+
+## Referências {.smaller}
 
 ::: {#refs}
 :::
