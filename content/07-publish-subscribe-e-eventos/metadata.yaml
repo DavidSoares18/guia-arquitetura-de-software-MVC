@@ -68,14 +68,14 @@ formatos:
     entregue: true
     colab_url: "https://colab.research.google.com/github/IFPE-BeloJardim-ES/guia-arquitetura-de-software/blob/main/content/07-publish-subscribe-e-eventos/notebook.ipynb"
   audio_notebooklm:
-    entregue: false
+    entregue: true
     arquivo: ""
-    url: ""
-    duracao_min: 0
-    transcricao: ""
+    url: "https://drive.google.com/file/d/1mirVQAUshux3aqBQ8AvjFLpqTQhR3wza/view?usp=drive_link"
+    duracao_min: 15
+    transcricao: "assets/audio-transcricao.md"
   gem_gemini:
-    entregue: false
-    url: ""
+    entregue: true
+    url: "https://gemini.google.com/gem/1PvyxDIoTPajv_xKKgs6tAdtxbUQbUoWE?usp=sharing"
     instrucoes: |
       Você é tutor do tópico "Publish-Subscribe e Arquitetura Baseada em Eventos"
       do Guia Aberto de Arquitetura de Software. Sua base de conhecimento é
